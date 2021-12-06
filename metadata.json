@@ -1,0 +1,19 @@
+{
+  "721": {
+    "{policy_id}": {
+      "{policy_name}": {
+        "image": "<IPFS link to the digital asset>",
+        "name": "<name of digital asset>",
+        "tags": [
+          "artwork",
+          "tags",
+          "go",
+          "here"
+        ],
+        "type": "<one of image/png,image/jpg,image/jpeg>"
+      }
+    },
+    "creator": "bk@kitajchuk.com",
+    "description": "Original Popsicle Propaganda Artwork as NFT Collectibles on the Cardano Blockchain"
+  }
+}

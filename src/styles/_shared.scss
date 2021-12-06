@@ -1,0 +1,144 @@
+@import '_reset.scss';
+
+/******************************************************************************
+ * Sizes
+*******************************************************************************/
+$max-width: 1024px;
+$min-width: 768px;
+$mob-width: 480px;
+
+/******************************************************************************
+ * Colors
+*******************************************************************************/
+$black: #000;
+$white: #fff;
+$grey: #555;
+$grey-dark: #333;
+$grey-black: #111;
+$green: #10ff59;
+$yellow: #eefd02;
+$red: #f30541;
+$pink: #f26d7d;
+$purple: #6441a4;
+$blue: #1795d4;
+$teal: #2affea;
+
+/******************************************************************************
+ * Fonts
+*******************************************************************************/
+$font-monospace: "panicsans";
+$font-monospace-bold: "#{$font-monospace}bold";
+
+@font-face {
+    font-family: $font-monospace;
+    src: url( "../fonts/#{$font-monospace}.woff" ) format( "woff" );
+    font-style: normal;
+    font-stretch: normal;
+}
+@font-face {
+    font-family: $font-monospace-bold;
+    src: url( "../fonts/#{$font-monospace-bold}.woff" ) format( "woff" );
+    font-style: normal;
+    font-stretch: normal;
+}
+
+/******************************************************************************
+ * Global
+*******************************************************************************/
+body {
+  color: $white;
+  font-family: $font-monospace;
+  font-size: 14px;
+  line-height: 1.7142857143;
+  background-color: $black;
+}
+
+strong {
+  font-family: $font-monospace-bold;
+}
+
+input,
+button,
+textarea {
+  padding: 16px 32px;
+  -webkit-appearance: none;
+  outline: 0;
+  border: 0;
+  font-family: $font-monospace;
+  font-size: 14px;
+  line-height: 1.7142857143;
+  text-align: center;
+  color: $black;
+  width: 420px;
+  max-width: 100%;
+  border-radius: 6px;
+
+  & + input,
+  & + textarea {
+    margin-top: 16px;
+  }
+}
+
+textarea {
+  resize: none;
+  min-height: 100px;
+  padding: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.-anim {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+
+  &.is-animated {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.-ul {
+  border-bottom: 1px solid $black;
+
+  .is-jobs & {
+    border-bottom-color: $white;
+  }
+
+  .is-wtf & {
+    border-bottom-color: $teal;
+  }
+}
+
+.-i {
+  display: inline;
+  
+  svg {
+    width: 20px;
+    height: 20px;
+    transform: translate3d(10px, 2px, 0);
+
+    @media (max-width: $mob-width) {
+      width: 16px;
+      height: 16px;
+    }
+
+    .is-jobs & {
+      fill: $white;
+    }
+  }
+}
+
+.-btn {
+  appearance: none;
+  border: 0;
+  outline: 0;
+  font-size: 14px;
+  line-height: 1;
+
+  @media (max-width: $mob-width) {
+    font-size: 12px;
+  }
+}

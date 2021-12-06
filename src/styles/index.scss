@@ -1,0 +1,254 @@
+@import '_shared.scss';
+
+// .pp {
+//   max-width: $max-width;
+//   margin: 0 auto;
+// }
+
+.pp__navi,
+.pp__header {
+  padding: 16px 32px;
+
+  @media (max-width: $min-width) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.pp__wallets {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+
+  @media (max-width: $min-width) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+.pp__wallet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 420px;
+
+  & + .pp__wallet {
+    margin-top: 16px;
+  }
+
+  > a {
+    padding: 16px 32px;
+    border-radius: 6px;
+    border: 2px solid $white;
+    cursor: pointer;
+    display: block;
+  }
+}
+
+.pp__add {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 420px;
+
+  button {
+    background-color: $purple;
+    color: $white;
+  }
+}
+
+.pp__funds {
+  padding: 16px;
+  border-radius: 6px;
+  border: 2px solid $white;
+  margin-bottom: 32px;
+}
+
+.pp__phrase {
+  > div:first-child {
+    margin: 16px 0 10px;
+  }
+}
+
+.pp__recover {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 420px;
+
+  button {
+    background-color: transparent;
+    color: $teal;
+    border: 2px solid $teal;
+    border-radius: 6px;
+  }
+}
+
+.pp__words {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  flex-wrap: wrap;
+}
+
+.pp__word {
+  padding: 6px 12px;
+  border: 1px solid $white;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 6px;
+  line-height: 1;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.active {
+    background-color: $teal;
+    border-color: $teal;
+    color: $black;
+  }
+}
+
+.pp__inputs {
+  button {
+    margin-top: 32px;
+    background-color: $purple;
+    color: $white;
+  }
+
+  button.delete {
+    background-color: transparent;
+    color: $red;
+    border: 2px solid $red;
+  }
+}
+
+/******************************************************************************
+ * Header
+*******************************************************************************/
+.pp__header {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/******************************************************************************
+ * Navi
+*******************************************************************************/
+.pp__navi {
+  position: relative;
+  border-top: 1px solid $grey-dark;
+  border-bottom: 1px solid $grey-dark;
+
+  ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      display: inline-block;
+      margin: 0 16px;
+    }
+
+    a.active {
+      text-decoration: line-through;
+    }
+  }
+
+  @media (max-width: $min-width) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  @media (max-width: $mob-width) {
+    font-size: 16px;
+  }
+}
+
+.pp__link {
+  &.is-active {
+    font-family: $font-monospace-bold;
+  }
+}
+
+/******************************************************************************
+ * Buttons
+*******************************************************************************/
+.pp__btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    width: calc(50% - 8px);
+
+    &.fit {
+      width: 100%;
+    }
+
+    &.cancel {
+      background-color: $pink;
+      color: $black;
+    }
+
+    &.confirm {
+      background-color: $purple;
+      color: $white;
+    }
+  }
+}
+
+/******************************************************************************
+ * Modal
+*******************************************************************************/
+.pp__modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 111001001;
+
+  .pp__inputs {
+    margin-bottom: 16px;
+  }
+
+  .pp__modal__wrap {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background-color: $black;
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: $min-width) {
+      padding: 16px;
+    }
+  }
+}
+
+.pp__toast {
+  padding: 16px;
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  top: 16px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: $red;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  z-index: 1110010012;
+  border-radius: 6px;
+  border: 1px solid $red;
+
+  span {
+    color: $white;
+  }
+}
