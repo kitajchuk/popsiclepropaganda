@@ -3,7 +3,7 @@ popsiclepropaganda
 
 > Learning Cardano with the Testnet Magics
 
-<img src="./src/assets/Rainbow_Popsicle.png" width="128" />
+<img src="./public/assets/Rainbow_Popsicle.png" width="128" />
 
 ## Getting started
 
