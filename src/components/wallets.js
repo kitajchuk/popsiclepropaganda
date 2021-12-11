@@ -73,22 +73,20 @@ export default function Wallets({sock}) {
       {!!wallets.length && wallets.map((wallet) => {
         return (
           <div className="pp__wallet" key={wallet.id}>
-            <NavLink to={`/wallet/${wallet.id}`} className="">
+            <NavLink to={`/wallet/${wallet.id}`} className="pp__wallet__link">
               {wallet.name}
             </NavLink>
           </div>
         );
       })}
-      <div className="pp__add">
-        <button onClick={() => {
+      <div className="pp__bump">
+        <button className="confirm" onClick={() => {
           setMode('create');
           setIsModal(!isModal);
         }}>
           add wallet
         </button>
-      </div>
-      <div className="pp__recover">
-        <button onClick={() => {
+        <button className="recover" onClick={() => {
           setMode('recover');
           setIsModal(!isModal);
         }}>
@@ -133,7 +131,7 @@ export default function Wallets({sock}) {
                         if (passphrase.length >= 10 && name !== '') {
                           setPhase('recovery');
                         }
-                      }} className="">
+                      }} className="confirm">
                         challenge phrase
                       </button>
                     </>

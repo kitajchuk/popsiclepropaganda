@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:network": "NETWORK=testnet docker-compose --project-name cardano up",
-    "stop:network": "NETWORK=testnet docker-compose --project-name cardano down",
-    "start:server": "NETWORK=testnet nodemon ./net/index.js",
+    "start:network": "env-cmd --file .env docker-compose --project-name cardano up",
+    "stop:network": "env-cmd --file .env docker-compose --project-name cardano down",
+    "start:server": "env-cmd --file .env nodemon ./net/index.js",
     "start:client": "cra-preact start",
     "build:client": "cra-preact build",
     "test:client": "cra-preact test",

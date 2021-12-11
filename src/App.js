@@ -69,8 +69,8 @@ function App({sock}) {
         {error && (
           <Toast error={error} />
         )}
-        <header className="pp__header">
-          <img src="/assets/Rainbow_PP.svg" width="128" alt="Rainbow_PP" />
+        <header className="pp__head">
+          <img src="/assets/Rainbow_PP.svg" alt="Rainbow_PP" />
         </header>
         <nav className="pp__navi">
           <ul>
@@ -81,14 +81,16 @@ function App({sock}) {
             </li>
           </ul>
         </nav>
-        <Switch>
-          <Route exact path="/">
-            <Wallets sock={sock} />
-          </Route>
-          <Route exact path="/wallet/:id">
-            <Wallet sock={sock} />
-          </Route>
-        </Switch>
+        <main className="pp__main">
+          <Switch>
+            <Route exact path="/">
+              <Wallets sock={sock} />
+            </Route>
+            <Route exact path="/wallet/:id">
+              <Wallet sock={sock} />
+            </Route>
+          </Switch>
+        </main>
       </div>
     </Router>
   );

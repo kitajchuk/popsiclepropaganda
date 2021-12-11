@@ -22,7 +22,7 @@ webSocketServer.on('connection', (ws) => {
           id: wallet.id,
           name: wallet.name,
           statistics: await wallet.getUtxoStatistics(),
-          addresses: await wallet.getAddresses(),
+          // addresses: await wallet.getAddresses(),
           unusedAddresses: await wallet.getUnusedAddresses(),
           availableBalance: wallet.getAvailableBalance(),
           rewardBalance: wallet.getRewardBalance(),

@@ -1,143 +1,35 @@
 @import '_shared.scss';
 
-// .pp {
-//   max-width: $max-width;
-//   margin: 0 auto;
-// }
+/******************************************************************************
+ * Main structure
+*******************************************************************************/
 
-.pp__navi,
-.pp__header {
-  padding: 16px 32px;
-
-  @media (max-width: $min-width) {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-.pp__wallets {
+.pp {
+  max-width: $max-width;
+  margin: 0 auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 32px;
 
-  @media (max-width: $min-width) {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-.pp__wallet {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 420px;
-
-  & + .pp__wallet {
-    margin-top: 16px;
-  }
-
-  > a {
-    padding: 16px 32px;
-    border-radius: 6px;
-    border: 2px solid $white;
-    cursor: pointer;
-    display: block;
+  > nav,
+  > header,
+  > section {
+    width: 100%;
   }
 }
 
-.pp__add {
-  margin-top: 32px;
-  width: 100%;
-  max-width: 420px;
+.pp__head {
+  padding: 32px 32px 16px;
 
-  button {
-    background-color: $purple;
-    color: $white;
+  img {
+    max-width: 128px;
   }
 }
 
-.pp__funds {
-  padding: 16px;
-  border-radius: 6px;
-  border: 2px solid $white;
-  margin-bottom: 32px;
-}
-
-.pp__phrase {
-  > div:first-child {
-    margin: 16px 0 10px;
-  }
-}
-
-.pp__recover {
-  margin-top: 32px;
-  width: 100%;
-  max-width: 420px;
-
-  button {
-    background-color: transparent;
-    color: $teal;
-    border: 2px solid $teal;
-    border-radius: 6px;
-  }
-}
-
-.pp__words {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 420px;
-  flex-wrap: wrap;
-}
-
-.pp__word {
-  padding: 6px 12px;
-  border: 1px solid $white;
-  border-radius: 3px;
-  display: inline-block;
-  margin: 6px;
-  line-height: 1;
-  font-size: 12px;
-  cursor: pointer;
-
-  &.active {
-    background-color: $teal;
-    border-color: $teal;
-    color: $black;
-  }
-}
-
-.pp__inputs {
-  button {
-    margin-top: 32px;
-    background-color: $purple;
-    color: $white;
-  }
-
-  button.delete {
-    background-color: transparent;
-    color: $red;
-    border: 2px solid $red;
-  }
-}
-
-/******************************************************************************
- * Header
-*******************************************************************************/
-.pp__header {
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/******************************************************************************
- * Navi
-*******************************************************************************/
 .pp__navi {
+  padding: 16px 32px;
   position: relative;
   border-top: 1px solid $grey-dark;
   border-bottom: 1px solid $grey-dark;
@@ -173,6 +65,87 @@
   }
 }
 
+.pp__main {
+  padding-top: 32px;
+}
+
+.pp__bump {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 420px;
+}
+
+/******************************************************************************
+ * Wallets list
+*******************************************************************************/
+.pp__wallet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 420px;
+
+  & + .pp__wallet {
+    margin-top: 16px;
+  }
+
+  .pp__wallet__link {
+    padding: 16px 32px;
+    border-radius: 6px;
+    border: 2px solid $white;
+    cursor: pointer;
+    display: block;
+    background-color: rgba(255, 255, 255, 0.15);
+    min-width: 420px;
+    max-width: 100%;
+
+    @media (max-width: 420px) {
+      min-width: 0;
+    }
+  }
+}
+
+.pp__phrase {
+  > div:first-child {
+    margin: 4px 0 10px;
+  }
+}
+
+.pp__words {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  flex-wrap: wrap;
+}
+
+.pp__word {
+  padding: 6px 12px;
+  border: 1px solid $white;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 6px;
+  line-height: 1;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.active {
+    background-color: $teal;
+    border-color: $teal;
+    color: $black;
+  }
+}
+
+/******************************************************************************
+ * Wallet details
+*******************************************************************************/
+.pp__funds {
+  padding: 16px;
+  border-radius: 6px;
+  border: 2px solid $white;
+  margin-bottom: 32px;
+}
+
 /******************************************************************************
  * Buttons
 *******************************************************************************/
@@ -184,24 +157,18 @@
   button {
     width: calc(50% - 8px);
 
+    & + button {
+      margin-top: 0;
+    }
+
     &.fit {
       width: 100%;
-    }
-
-    &.cancel {
-      background-color: $pink;
-      color: $black;
-    }
-
-    &.confirm {
-      background-color: $purple;
-      color: $white;
     }
   }
 }
 
 /******************************************************************************
- * Modal
+ * Modal, toasts
 *******************************************************************************/
 .pp__modal {
   position: fixed;
@@ -209,7 +176,7 @@
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -239,7 +206,7 @@
   left: 16px;
   right: 16px;
   top: 16px;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.5);
   color: $red;
   display: flex;
   justify-content: flex-start;

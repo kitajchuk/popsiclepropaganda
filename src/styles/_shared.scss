@@ -61,7 +61,7 @@ input,
 button,
 textarea {
   padding: 16px 32px;
-  -webkit-appearance: none;
+  appearance: none;
   outline: 0;
   border: 0;
   font-family: $font-monospace;
@@ -69,11 +69,12 @@ textarea {
   line-height: 1.7142857143;
   text-align: center;
   color: $black;
-  width: 420px;
+  width: 100%;
   max-width: 100%;
   border-radius: 6px;
 
   & + input,
+  & + button,
   & + textarea {
     margin-top: 16px;
   }
@@ -87,6 +88,34 @@ textarea {
 
 button {
   cursor: pointer;
+
+  &.cancel {
+    background-color: transparent;
+    color: $pink;
+    border: 2px solid $pink;
+  }
+
+  &.confirm {
+    background-color: transparent;
+    color: $blue;
+    border: 2px solid $blue;
+  }
+
+  &.recover {
+    background-color: transparent;
+    color: $grey;
+    border: 2px solid $grey;
+  }
+
+  &.delete {
+    background-color: transparent;
+    color: $red;
+    border: 2px solid $red;
+  }
+
+  @media (max-width: $mob-width) {
+    font-size: 12px;
+  }
 }
 
 .-anim {
@@ -97,18 +126,6 @@ button {
   &.is-animated {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-  }
-}
-
-.-ul {
-  border-bottom: 1px solid $black;
-
-  .is-jobs & {
-    border-bottom-color: $white;
-  }
-
-  .is-wtf & {
-    border-bottom-color: $teal;
   }
 }
 
@@ -124,21 +141,5 @@ button {
       width: 16px;
       height: 16px;
     }
-
-    .is-jobs & {
-      fill: $white;
-    }
-  }
-}
-
-.-btn {
-  appearance: none;
-  border: 0;
-  outline: 0;
-  font-size: 14px;
-  line-height: 1;
-
-  @media (max-width: $mob-width) {
-    font-size: 12px;
   }
 }
