@@ -12,11 +12,11 @@ This is a playground to learn Cardano concepts by practically implementing them.
 ### Install
 
 - `yarn`
-- `echo "NETWORK=testnet" > .env
+- `echo "NETWORK=testnet" > .env`
 
 Or for the `mainnet` you can do the following or omit the `NETWORK` environment variable all together since `mainnet` is the default for `docker-compose`:
 
-- `echo "NETWORK=mainnet" > .env
+- `echo "NETWORK=mainnet" > .env`
 
 ### Backend commands
 
