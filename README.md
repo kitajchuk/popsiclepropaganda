@@ -3,7 +3,7 @@ popsiclepropaganda
 
 > Learning Cardano Blockchain Development
 
-<img src="./public/assets/Rainbow_PP.png" width="128" />
+<img src="./public/assets/RainbowPopsicle.png" width="128" />
 
 ## Getting started
 
