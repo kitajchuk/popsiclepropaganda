@@ -9,6 +9,14 @@ popsiclepropaganda
 
 This is a playground to learn Cardano concepts by practically implementing them. Currently focusing on transactions, wallets and native assets (tokens, NFTs). This all began by from a low-level approach by installing the [cardano-node](https://github.com/input-output-hk/cardano-node) from source and completing the [native assets examples](https://developers.cardano.org/docs/native-tokens/minting) on their developer portal.
 
+### Low-level scripts
+
+You can find some low-level scripts for doing things like sending ADA, burning tokens and minting NFTs in `./net/utils/rawtx.js`.
+
+### NFTs
+
+The first ever Popsicle Propaganda NFT was minted on the Cardano Testnet with these low-level scripts. It was minted by a testnet `payment.addr` and sent to a testnet wallet. You can view its details on Cardanoscan for testnet [HERE](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031).
+
 ### Install
 
 - `yarn`
