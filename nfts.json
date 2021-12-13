@@ -1,10 +1,14 @@
 [
   {
-    "Kitajchuk_Rainbow_POP.png": {
-      "name": "Kitajchuk Rainbow POP",
-      "tags": [],
+    "PP1": {
+      "name": "RainbowPopsicle#svg",
+      "type": "image/svg",
+      "image": "ipfs://ipfs/QmQxaE9xwyysr82NyLwxNWF2D1HUTndzFnkH38UPBkSZEa"
+    },
+    "PP2": {
+      "name": "RainbowPopsicle#png",
       "type": "image/png",
-      "image": "ipfs://ipfs/QmVx3vyQqqeJDq9jjgLj1kX43E2K82mYkQbXbuqMTwJNRA"
+      "image": "ipfs://ipfs/QmSGzUEQePXQ6Suncgro4AGCsFU2PSiFdMPNUsvcE1hUAM"
     }
   }
 ]

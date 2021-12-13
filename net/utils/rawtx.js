@@ -21,10 +21,13 @@
  * │   ├── policy.vkey                # Policy verification key
  * │   └── policyID                   # File which holds the policy ID
  * └── protocol.json                  # Protocol parameters
+ * └── metadata.json                  # Metadata for NFTs
  * 
  * These utilities can be used to send ADA from a local test address to a wallet address
  * Setup: https://developers.cardano.org/docs/native-tokens/minting#generate-keys-and-address
  * Funded with Testnet faucet (1000 ADA) so these scripts were used to send the ADA to a wallet
+ * 
+ * NFTs: https://developers.cardano.org/docs/native-tokens/minting-nfts
  * 
  * These scripts are not useful per say as they operate low-level with cardano-cli
  * The parsing of transactions isn't good, but it's fine for an addy with just one line to parse
@@ -37,7 +40,7 @@
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
-const ROOT = __dirname;
+const ROOT = process.cwd();
 const SHELL_OPTS = { silent: false };
 
 /**
@@ -127,6 +130,130 @@ function getAddressInfo() {
   };
 }
 
+/**
+ * Mint an NFT token on the blockchain
+ * @param {string} receiver The address to send the token to (can be wallet)
+ * @param {string} tokenname The name of the NFT token to mint
+ * @param {object} metadata The NFT metadata to mint
+ * @returns {Promise} Resolves when UTxO history updates on blockchain
+ */
+function mintNFT(receiver, tokenname, metadata) {
+  const tokenamount = 1;
+  const slotnumber = getFutureSlot();
+  const policyScript = JSON.parse(getFileGuts('policy/policy.script'));
+
+  let output = 1400000;
+  let outputMe = 0;
+
+  // For NFTs write determined slot number to policy script
+  policyScript.scripts[0].slot = slotnumber;
+  fs.writeFileSync(path.join(ROOT, 'policy/policy.script'), JSON.stringify(policyScript, null, 2));
+
+  // Now we need to generate the policyID as per policy.script
+  genPolicyID();
+
+  const {
+    address,
+    policyID,
+    transactions,
+  } = getAddressInfo();
+
+  // Now we need to update the metadata with the policyID
+  const metaDataJSON = {
+    721: {
+      [policyID]: {
+        [tokenname]: metadata,
+      },
+    },
+  };
+
+  fs.writeFileSync(path.join(ROOT, 'metadata.json'), JSON.stringify(metaDataJSON, null, 2).replace());
+
+  const {
+    tokens,
+    txhash,
+    funds,
+    txix,
+  } = transactions[0];
+
+  const txOutLine = tokens.map((tkn) => `${tkn.amount} ${tkn.hash}.${tkn.name}`).join(' + ');
+
+  outputMe = funds - output;
+
+  let command = shell.exec(`
+    cardano-cli transaction build \
+      --testnet-magic 1097911063 \
+      --alonzo-era \
+      --tx-in ${txhash}#${txix} \
+      --tx-out ${receiver}+${output}+"${tokenamount} ${policyID}.${tokenname}" \
+      --tx-out ${address}+${output}+"${txOutLine}" \
+      --change-address ${address} \
+      --mint="${tokenamount} ${policyID}.${tokenname}" \
+      --minting-script-file ${path.join(ROOT, 'policy/policy.script')} \
+      --metadata-json-file ${path.join(ROOT, 'metadata.json')}  \
+      --invalid-hereafter ${slotnumber} \
+      --witness-override 2 \
+      --out-file ${path.join(ROOT, 'matx.raw')}
+  `, SHELL_OPTS);
+
+  if (command.code === 1) {
+    output = command.stderr.replace(/\n/g, '').match(/[0-9]+$/g);
+
+    if (output) {
+      output = Number(output[0]);
+
+      command = shell.exec(`
+        cardano-cli transaction build \
+          --testnet-magic 1097911063 \
+          --alonzo-era \
+          --tx-in ${txhash}#${txix} \
+          --tx-out ${receiver}+${output}+"${tokenamount} ${policyID}.${tokenname}" \
+          --tx-out ${address}+${output}+"${txOutLine}" \
+          --change-address ${address} \
+          --mint="${tokenamount} ${policyID}.${tokenname}" \
+          --minting-script-file ${path.join(ROOT, 'policy/policy.script')} \
+          --metadata-json-file ${path.join(ROOT, 'metadata.json')}  \
+          --invalid-hereafter ${slotnumber} \
+          --witness-override 2 \
+          --out-file ${path.join(ROOT, 'matx.raw')}
+      `, SHELL_OPTS);
+    }
+  }
+
+  // Above was successful if output is like:
+  // "Estimated transaction fee: Lovelace XXXXXX"
+
+  command = shell.exec(`
+    cardano-cli transaction sign  \
+      --signing-key-file ${path.join(ROOT, 'payment.skey')}  \
+      --signing-key-file ${path.join(ROOT, 'policy/policy.skey')}  \
+      --testnet-magic 1097911063 \
+      --tx-body-file ${path.join(ROOT, 'matx.raw')} \
+      --out-file ${path.join(ROOT, 'matx.signed')}
+  `, SHELL_OPTS);
+
+  command = shell.exec(`
+    cardano-cli transaction submit \
+      --tx-file matx.signed \
+      --testnet-magic 1097911063
+  `, SHELL_OPTS);
+
+  // Poll for changes on the network...
+  let addy = getAddressInfo();
+  while (addy.transactions[0].txhash === txhash) {
+    console.log('polling for txhash changes...');
+    addy = getAddressInfo();
+  }
+
+  return Promise.resolve(addy);
+}
+
+/**
+ * 
+ * @param {number} amount The amount of ADA to send
+ * @param {string} receiver The address to send to (can be wallet)
+ * @returns {Promise} Resolves when UTxO history updates on blockchain
+ */
 function sendCoin(amount, receiver) {
   const {
     transactions,
@@ -194,6 +321,12 @@ function sendCoin(amount, receiver) {
   return Promise.resolve(addy);
 }
 
+/**
+ * 
+ * @param {string} token The name of the token to burn
+ * @param {number} amount The amount of tokens to burn
+ * @returns {Promise} Resolves when UTxO history updates on blockchain
+ */
 function burnToken(token, amount) {
   const {
     transactions,
@@ -301,10 +434,43 @@ function queryTip() {
   `, SHELL_OPTS);
 }
 
+/**
+ * Get a slot from the future of the blockchain
+ * @returns {number} The future slot
+ */
+function getFutureSlot() {
+  const command = shell.exec(`
+    expr $(cardano-cli query tip \
+        --testnet-magic 1097911063 | jq .slot?) + 10000
+  `, SHELL_OPTS);
+
+  return Number(command.stdout);
+}
+
+function genPolicyID() {
+  shell.exec(`
+    cardano-cli transaction policyid \
+      --script-file ./policy/policy.script > policy/policyID
+  `, SHELL_OPTS);
+}
+
+function queryAddressUTxO() {
+  const address = getAddress();
+
+  shell.exec(`
+    cardano-cli query utxo \
+      --address ${address} \
+      --testnet-magic 1097911063
+  `, SHELL_OPTS);
+}
+
 module.exports = {
+  mintNFT,
   queryTip,
   sendCoin,
   burnToken,
   calcMinFee,
+  getFileGuts,
   getAddressInfo,
+  queryAddressUTxO,
 };

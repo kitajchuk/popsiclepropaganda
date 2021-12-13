@@ -4,16 +4,10 @@
       "{policy_name}": {
         "image": "<IPFS link to the digital asset>",
         "name": "<name of digital asset>",
-        "tags": [
-          "artwork",
-          "tags",
-          "go",
-          "here"
-        ],
-        "type": "<one of image/png,image/jpg,image/jpeg>"
+        "type": "<one of image/png,image/jpg,image/jpeg,image/svg,text/html>"
       }
     },
-    "creator": "bk@kitajchuk.com",
+    "creator": "bk@popsiclepropaganda.com",
     "description": "Original Popsicle Propaganda Artwork as NFT Collectibles on the Cardano Blockchain"
   }
 }
