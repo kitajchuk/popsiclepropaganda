@@ -139,7 +139,6 @@ function mintNFT(receiver, tokenname, metadata) {
   const policyScript = JSON.parse(getFileGuts('policy/policy.script'));
 
   let output = 1400000;
-  let outputMe = 0;
 
   // For NFTs write determined slot number to policy script
   policyScript.scripts[0].slot = slotnumber;
@@ -168,13 +167,10 @@ function mintNFT(receiver, tokenname, metadata) {
   const {
     tokens,
     txhash,
-    funds,
     txix,
   } = transactions[0];
 
   const txOutLine = tokens.map((tkn) => `${tkn.amount} ${tkn.hash}.${tkn.name}`).join(' + ');
-
-  outputMe = funds - output;
 
   let command = shell.exec(`
     cardano-cli transaction build \
