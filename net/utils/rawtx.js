@@ -21,16 +21,12 @@
  * │   ├── policy.vkey                # Policy verification key
  * │   └── policyID                   # File which holds the policy ID
  * └── protocol.json                  # Protocol parameters
- * └── metadata.json                  # Metadata for NFTs
  * 
  * These utilities can be used to send ADA from a local test address to a wallet address
  * Setup: https://developers.cardano.org/docs/native-tokens/minting#generate-keys-and-address
  * Funded with Testnet faucet (1000 ADA) so these scripts were used to send the ADA to a wallet
  * 
  * NFTs: https://developers.cardano.org/docs/native-tokens/minting-nfts
- * 
- * These scripts are not useful per say as they operate low-level with cardano-cli
- * The parsing of transactions isn't good, but it's fine for an addy with just one line to parse
  * 
  * Assuming you have a wallet address to send to (receiver) you can use sendCoin like:
  *
