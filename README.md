@@ -15,7 +15,10 @@ You can find some low-level scripts for doing things like sending ADA, burning t
 
 ### NFTs
 
-The first ever Popsicle Propaganda NFT was minted on the Cardano Testnet with these low-level scripts. It was minted by a testnet `payment.addr` and sent to a testnet wallet. You can view its details on Cardanoscan for testnet [HERE](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031).
+The first ever Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
+
+- [PP1](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031)
+- [PP2](https://testnet.cardanoscan.io/token/b9f1705170d75f144a4fd0636c2928b2bb39a5ab4db343978a0a1568505032)
 
 ### Install
 

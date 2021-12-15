@@ -70,7 +70,7 @@ function App({sock}) {
           <Toast error={error} />
         )}
         <header className="pp__head">
-          <img src="/assets/Rainbow_PP.svg" alt="Rainbow_PP" />
+          <img src="/assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
         </header>
         <nav className="pp__navi">
           <ul>
