@@ -11,7 +11,7 @@ This is a playground to learn Cardano concepts by practically implementing them.
 
 ### Low-level scripts
 
-You can find some low-level scripts for doing things like sending ADA, burning tokens and minting NFTs in `./net/utils/rawtx.js`.
+You can find some low-level scripts at [./net/utils/rawtx.js](./net/utils/rawtx.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
 
 ### NFTs
 
@@ -23,11 +23,8 @@ The first ever Popsicle Propaganda NFTs were minted on the Cardano Testnet with 
 ### Install
 
 - `yarn`
-- `echo "NETWORK=testnet" > .env`
-
-Or for the `mainnet` you can do the following or omit the `NETWORK` environment variable all together since `mainnet` is the default for `docker-compose`:
-
-- `echo "NETWORK=mainnet" > .env`
+- For testnet: `echo "NETWORK=testnet" > .env`
+- For mainnet: `echo "NETWORK=mainnet" > .env`
 
 ### Backend commands
 

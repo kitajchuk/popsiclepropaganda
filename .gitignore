@@ -20,6 +20,6 @@ yarn-error.log*
 .env*
 
 # popsiclepropaganda
-/.idea/
+/dev/
 /net/token
 

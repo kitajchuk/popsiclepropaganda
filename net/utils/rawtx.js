@@ -1,55 +1,132 @@
 /**
+ * 
+ * Folder structure for local dev experiments:
+ * ./dev:
+ * ├── folder/
+ *     ├── index.js                       # Tests with rawtx.js
+ *     ├── protocol.json                  # Protocol parameters
+ *     ├── burning.raw                    # Raw transaction to burn token
+ *     ├── burning.signed                 # Signed transaction to burn token
+ *     ├── matx.raw                       # Raw transaction to mint token
+ *     ├── matx.signed                    # Signed transaction to mint token
+ *     ├── metadata.json                  # Metadata to specify NFT attributes
+ *     ├── payment.addr                   # Address to send / receive 
+ *     ├── payment.skey                   # Payment signing key
+ *     ├── payment.vkey                   # Payment verification key
+ *     └── policy/                        # Folder which holds everything policy-wise
+ *         ├── policy.script              # Script to genereate the policyID
+ *         ├── policy.skey                # Policy signing key
+ *         ├── policy.vkey                # Policy verification key
+ *         └── policyID                   # File which holds the policy ID
+ * 
  * Example cardano setup on macos:
- * cardano source at ~/cardano-src/
- * cardano-cli at ~/.local/bin/
- * cardano-node at ~/.local/bin/
- * cardano db at ~/cardano/
- * configured cardano in ~/.bashrc
- *
- * Local folder structure for transactions:
- * ├── burning.raw                    # Raw transaction to burn token
- * ├── burning.signed                 # Signed transaction to burn token
- * ├── matx.raw                       # Raw transaction to mint token
- * ├── matx.signed                    # Signed transaction to mint token
- * ├── metadata.json                  # Metadata to specify NFT attributes
- * ├── payment.addr                   # Address to send / receive 
- * ├── payment.skey                   # Payment signing key
- * ├── payment.vkey                   # Payment verification key
- * ├── policy                         # Folder which holds everything policy-wise
- * │   ├── policy.script              # Script to genereate the policyID
- * │   ├── policy.skey                # Policy signing key
- * │   ├── policy.vkey                # Policy verification key
- * │   └── policyID                   # File which holds the policy ID
- * └── protocol.json                  # Protocol parameters
+ * ├── cardano source at ~/cardano-src/
+ * ├── cardano-cli at ~/.local/bin/
+ * ├── cardano-node at ~/.local/bin/
+ * ├── cardano db at ~/cardano/
+ * ├── CARDANO_NODE_SOCKET_PATH in ~/.bashrc
+ * 
+ * Example running cardano-node locally as per above setup:
+ * cardano-node run \
+ *   --config ~/cardano/config/testnet-config.json \
+ *   --database-path ~/cardano/db/ \
+ *   --socket-path ~/cardano/db/node.socket \
+ *   --host-addr 127.0.0.1 \
+ *   --port 1337 \
+ *   --topology ~/cardano/config/testnet-topology.json
  * 
  * You need to run a local cardano-node and expose CARDANO_NODE_SOCKET_PATH
  * Otherwise the cardano-cli will be unable to function for these scripts.
  * 
- * Scripts assume payment.*,  policy/* and protocol.json files created a la:
+ * Scripts assume payment.*,  policy/* files created a la:
  * https://developers.cardano.org/docs/native-tokens/minting#generate-keys-and-address
+ * https://developers.cardano.org/docs/native-tokens/minting/#generate-the-policy
  * 
- * You can fund payment.addr with Testnet faucet (1000 ADA):
+ * Scripts currently only work with latest UTxO, e.g. single --tx-in operations.
+ * 
+ * You can fund a payment.addr with Testnet faucet (1000 ADA):
  * https://developers.cardano.org/docs/integrate-cardano/testnet-faucet/
  * 
  * Minting NFTs for cardano is complex so mintNFT is still a WIP:
  * https://developers.cardano.org/docs/native-tokens/minting-nfts
+ * https://developers.cardano.org/docs/native-tokens/minting-nfts#creating-the-policyid
  * 
- * Example:
+ * Example usage of named export function `sendCoin`:
  * Assuming you have a wallet address to send to (receiver) you can use sendCoin like:
  * sendCoin(10 * 1e6, receiver).then(() => {
- *    ...things here...
+ *   // ...async things here...
  * });
+ * or:
+ * let info = await sendCoin(12 * 1e6, receiver)
+ * // ...async things here...
+ * console.log(info)
  */
+
+/*
+ * Example usage of these utils in a node-js script located at ./dev/example/index.js
+ $ cd ./dev/example/
+ $ node index.js
+*/
+
+/*
+ * Example of an index.js from ./dev/example/index.js
+// You can load `shelljs`, a useful tool used in the rawtx.js
+const shell = require('shelljs');
+
+// You can load methods from the rawtx.js exports
+const { ... } = require('../../net/utils/rawtx');
+
+// Need some way to poll the cardano-cli to know when the node.socket connection opens
+// A polling method with `shelljs` works to bind our blockchain to a cardano-node instance
+queryTip().then(async () => {
+  // Cleanup working files
+  cleanTransients();
+
+  // Generate fresh protocol.json
+  genProtocol();
+
+  // Examine the current protocols.json
+  console.log('protocol.json', getProtocol());
+
+  let info;
+
+  // Local payment.addr info
+  queryAddy();
+
+  // Info about some other wallet address you are testing with
+  queryAddy('addr_test420YoukNowhoWThiSgoEs');
+
+  // Transact via local payment.addr and payment.skey
+  info = await sendToken('SomeToke', 100, 'addr_test420YoukNowhoWThiSgoEs');
+
+  console.log(info);
+});
+*/
 
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
-const ROOT = process.cwd();
+
+// For handling shelljs stdout to console
 const SHELL_OPTS = { silent: true };
+const SHELL_OUT = { silent: false };
+
+// Always execute your node-js script from the directory your files are
+const ROOT = process.cwd();
+
+// There's some REAL maths for this stuff:
+// https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
+// But this seems to work as a "dumb" minimum for certain transactions...
+const MIN_ADA = 1400000;
+
+// There's some notes about burning tokens
+// https://developers.cardano.org/docs/native-tokens/minting#burning-token
+// https://github.com/cardano-foundation/developer-portal/pull/283#discussion_r705612888
+const BURN_FEE = 300000;
 
 /**
  * Read contents of local file for cardano-cli
- * @param {string} localPath The path relative to __dirname
+ * @param {string} localPath The path relative to process.cwd()
  * @returns string Contents of the file
  */
 function getFileGuts(localPath) {
@@ -72,6 +149,14 @@ function getAddress() {
  */
 function getPolicyID() {
   return getFileGuts('policy/policyID');
+}
+
+/**
+ * Get the protocols JSON
+ * @returns {object} The protocol.json as object
+ */
+ function getProtocol() {
+  return JSON.parse(getFileGuts('protocol.json'));
 }
 
 /**
@@ -164,7 +249,6 @@ function mintNFT(receiver, tokenname, metadata) {
     const tokenamount = 1;
     const slotnumber = getFutureSlot();
     const policyScript = JSON.parse(getFileGuts('policy/policy.script'));
-    const shellOpts = { silent: false }; // Until this works better...
 
     // For NFTs write determined slot number to policy script
     policyScript.scripts[0].slot = slotnumber;
@@ -208,7 +292,7 @@ function mintNFT(receiver, tokenname, metadata) {
       return;
     }
 
-    let output = 1400000;
+    let output = MIN_ADA;
 
     // Test the tx build...
     // If it fails we get this min req UTxO error and can adjust accordingly
@@ -229,7 +313,7 @@ function mintNFT(receiver, tokenname, metadata) {
         --invalid-hereafter ${slotnumber} \
         --witness-override 2 \
         --out-file ${path.join(ROOT, 'matx.raw')}
-    `, shellOpts);
+    `, SHELL_OUT);
 
     // This condition will run if we failed with specific min req error
     if (command.code === 1 && /Minimum required UTxO/.test(command.stderr)) {
@@ -252,7 +336,7 @@ function mintNFT(receiver, tokenname, metadata) {
             --invalid-hereafter ${slotnumber} \
             --witness-override 2 \
             --out-file ${path.join(ROOT, 'matx.raw')}
-        `, shellOpts);
+        `, SHELL_OUT);
       } else {
         console.log(`Bad parse of Minimum Required UTxO: ${output}`);
         reject(`Bad parse of Minimum Required UTxO: ${output}`);
@@ -270,13 +354,13 @@ function mintNFT(receiver, tokenname, metadata) {
           --testnet-magic 1097911063 \
           --tx-body-file ${path.join(ROOT, 'matx.raw')} \
           --out-file ${path.join(ROOT, 'matx.signed')}
-      `, shellOpts);
+      `, SHELL_OUT);
 
       command = shell.exec(`
         cardano-cli transaction submit \
           --tx-file ${path.join(ROOT, 'matx.signed')} \
           --testnet-magic 1097911063
-      `, shellOpts);
+      `, SHELL_OUT);
 
       resolveWithNewUTxO(txhash, resolve);
     
@@ -312,8 +396,7 @@ function mintToken(token, amount) {
       txOutLine = `${txOutLine} + `;
     }
   
-    // Note: https://github.com/cardano-foundation/developer-portal/pull/283#discussion_r705612888
-    let fee = 300000;
+    let fee = BURN_FEE;
     let output = 0;
 
     // First build a raw transaction to calculate the fee
@@ -363,7 +446,7 @@ function mintToken(token, amount) {
 }
 
 /**
- * 
+ * Send ADA to an address or wallet
  * @param {number} amount The amount of ADA to send
  * @param {string} receiver The address to send to (can be wallet)
  * @returns {Promise} Resolves when UTxO history updates on blockchain
@@ -430,7 +513,82 @@ function sendCoin(amount, receiver) {
   });
 }
 
-function sendToken(token, amount) {}
+/**
+ * Send tokens to an address or wallet, requires 1e6 ADA
+ * @param {string} token The name of the token to send
+ * @param {number} amount The amount of ADA to send
+ * @param {string} receiver The address to send to (can be wallet)
+ * @returns {Promise} Resolves when UTxO history updates on blockchain
+ */
+function sendToken(token, amount, receiver) {
+  return new Promise((resolve, reject) => {
+    const {
+      transactions,
+      policyID,
+      address,
+    } = getAddressInfo();
+  
+    const {
+      tokens,
+      txhash,
+      funds,
+      txix,
+    } = transactions[0];
+
+    let fee = 0;
+    let receiveroutput = MIN_ADA;
+    let output = funds - receiveroutput;
+
+    const txOutLine = tokens.map((tkn) => {
+      if (tkn.name === token) {
+        return `${tkn.amount - amount} ${tkn.hash}.${tkn.name}`;
+      }
+  
+      return `${tkn.amount} ${tkn.hash}.${tkn.name}`;
+    }).join(' + ');
+
+    // First build a raw transaction to calculate the fee
+    let command = shell.exec(`
+      cardano-cli transaction build-raw \
+        --fee ${fee} \
+        --tx-in ${txhash}#${txix} \
+        --tx-out ${receiver}+${receiveroutput}+"${amount} ${policyID}.${token}" \
+        --tx-out ${address}+${output}+"${txOutLine}" \
+        --out-file ${path.join(ROOT, 'rec_matx.raw')}
+    `, SHELL_OPTS);
+
+    fee = calcMinFee('rec_matx.raw');
+    output = funds - receiveroutput - fee;
+
+    // Re-build the transaction with the correct amounts
+    command = shell.exec(`
+      cardano-cli transaction build-raw \
+        --fee ${fee} \
+        --tx-in ${txhash}#${txix} \
+        --tx-out ${receiver}+${receiveroutput}+"${amount} ${policyID}.${token}" \
+        --tx-out ${address}+${output}+"${txOutLine}" \
+        --out-file ${path.join(ROOT, 'rec_matx.raw')}
+    `, SHELL_OPTS);
+
+    // Sign it
+    command = shell.exec(`
+      cardano-cli transaction sign  \
+        --signing-key-file ${path.join(ROOT, 'payment.skey')}  \
+        --tx-body-file ${path.join(ROOT, 'rec_matx.raw')}  \
+        --out-file ${path.join(ROOT, 'rec_matx.signed')} \
+        --testnet-magic 1097911063
+    `, SHELL_OPTS);
+  
+    // Send it
+    command = shell.exec(`
+      cardano-cli transaction submit \
+        --tx-file ${path.join(ROOT, 'rec_matx.signed')} \
+        --testnet-magic 1097911063
+    `, SHELL_OPTS);
+
+    resolveWithNewUTxO(txhash, resolve);
+  });
+}
 
 /**
  * 
@@ -512,7 +670,7 @@ function burnToken(token, amount) {
 
 /**
  * Calculate the minimum fee for a transaction
- * @param {string} bodyFile The raw file to calculate tx from (rec_matx.raw, burning.raw)
+ * @param {string} bodyFile The raw file to calculate tx from (matx.raw, rec_matx.raw, burning.raw)
  * @returns {number} The calculated fee
  */
 function calcMinFee(bodyFile) {
@@ -559,16 +717,43 @@ function queryTip() {
 }
 
 /**
+ * Query the UTxO info for an address
+ * This is intentionally a "loud" usage of the CLI to expose the UTxO output
+ * @param {string} addy Optional to pass in a different address to query
+ */
+ function queryAddy(addy) {
+  const address = addy || getAddress();
+
+  shell.exec(`
+    cardano-cli query utxo \
+      --address ${address} \
+      --testnet-magic 1097911063
+  `, SHELL_OUT);
+}
+
+/**
  * Get a slot from the future of the blockchain
+ * @param {number} slots The amount of slots -- default is 10k
  * @returns {number} The future slot
  */
-function getFutureSlot() {
+function getFutureSlot(slots = 10000) {
   const command = shell.exec(`
-    expr $(cardano-cli query tip \
-        --testnet-magic 1097911063 | jq .slot?) + 10000
+    cardano-cli query tip --testnet-magic 1097911063
   `, SHELL_OPTS);
+  const json = JSON.parse(command.stdout);
 
-  return Number(command.stdout);
+  return json.slot + slots;
+}
+
+/**
+ * Generates the latest protocol.json file
+ */
+function genProtocol() {
+  shell.exec(`
+    cardano-cli query protocol-parameters \
+      --testnet-magic 1097911063 \
+      --out-file ${path.join(ROOT, 'protocol.json')}
+  `, SHELL_OPTS);
 }
 
 /**
@@ -577,22 +762,19 @@ function getFutureSlot() {
 function genPolicyID() {
   shell.exec(`
     cardano-cli transaction policyid \
-      --script-file ./policy/policy.script > policy/policyID
+      --script-file ${path.join(ROOT, 'policy/policy.script')} > ${path.join(ROOT, 'policy/policyID')}
   `, SHELL_OPTS);
 }
 
 /**
- * Query the UTxO info for an address
- * @param {string} addy Optional to pass in a different address to query
+ * Destructive clean-up of the transient working files with cardano-cli
  */
-function queryAddy(addy) {
-  const address = addy || getAddress();
-
+function cleanTransients() {
   shell.exec(`
-    cardano-cli query utxo \
-      --address ${address} \
-      --testnet-magic 1097911063
-  `, { silent: false });
+    rm -rf matx*
+    rm -rf rec_matx*
+    rm -rf burning*
+  `, SHELL_OPTS);
 }
 
 module.exports = {
@@ -605,5 +787,9 @@ module.exports = {
   queryAddy,
   calcMinFee,
   getFileGuts,
+  getProtocol,
+  genProtocol,
+  getFutureSlot,
   getAddressInfo,
+  cleanTransients,
 };
