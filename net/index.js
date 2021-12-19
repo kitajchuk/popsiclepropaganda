@@ -1,3 +1,4 @@
+const shell = require('shelljs');
 const { WebSocketServer } = require('ws');
 const { Seed, WalletServer } = require('cardano-wallet-js');
 const {
@@ -5,7 +6,8 @@ const {
   PORT_NETWORK,
 } = require('./constants');
 
-const walletServer = WalletServer.init(`http://localhost:${PORT_NETWORK}/v2`);
+// The cardano-wallet host is exposed via docker-compose networks
+const walletServer = WalletServer.init(`http://cardano-wallet:${PORT_NETWORK}/v2`);
 const webSocketServer = new WebSocketServer({ port: PORT_LOCAL });
 
 webSocketServer.on('listening', () => {

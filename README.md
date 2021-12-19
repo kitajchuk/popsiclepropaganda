@@ -11,30 +11,44 @@ This is a playground to learn Cardano concepts by practically implementing them.
 
 ### Low-level scripts
 
-You can find some low-level scripts at [./net/utils/rawtx.js](./net/utils/rawtx.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
+You can find some low-level scripts at [./app/utils/rawtx.js](./app/utils/rawtx.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
 
 ### NFTs
 
-The first ever Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
+Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
 
 - [PP1](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031)
 - [PP2](https://testnet.cardanoscan.io/token/b9f1705170d75f144a4fd0636c2928b2bb39a5ab4db343978a0a1568505032)
 
 ### Install
 
-- `yarn`
-- For testnet: `echo "NETWORK=testnet" > .env`
-- For mainnet: `echo "NETWORK=mainnet" > .env`
+```shell
+# deps
+yarn
+
+# for testnet
+echo "NETWORK=testnet" > .env
+
+# for mainnet
+echo "NETWORK=mainnet" > .env
+```
 
 ### Backend commands
-
-Always start and stop the network with the `yarn` commands such that these actions are graceful using `docker-compose`.
 
 Currently this code operates as a *full-node wallet*, offline as a desktop playground. You can interface with [cardano-wallet](https://github.com/input-output-hk/cardano-wallet) with a `CRUD` API. That is to say you can Create, Read/Recover, Update and Destroy your wallets.
 
 - `yarn start:network`
 - `yarn stop:network`
-- `yarn start:server`
+
+Always start and stop the network with the `yarn` commands for graceful usage of `docker-compose`. The `docker-compose.yml` contains a custom service called [cardano-nodejs](https://hub.docker.com/r/kitajchuk/cardano-nodejs) which runs a `nodejs` container with the `cardano-cli`. This container serves `./net` as a backend web client for the frontend react app. The docker image is built and published from this [Dockerfile](./Dockerfile):
+
+```shell
+# build from ./Dockerfile
+docker build --tag kitajchuk/cardano-nodejs:1.30.1 .
+
+# publish to docker hub
+docker push kitajchuk/cardano-nodejs:1.30.1
+```
 
 ### Frontend commands
 

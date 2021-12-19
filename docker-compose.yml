@@ -15,6 +15,8 @@ services:
         compress: "true"
         max-file: "10"
         max-size: "50m"
+    networks:
+      - test
 
   cardano-wallet:
     image: inputoutput/cardano-wallet:2021.11.11
@@ -38,6 +40,31 @@ services:
         compress: "true"
         max-file: "10"
         max-size: "50m"
+    networks:
+      - test
+  
+  cardano-nodejs:
+    image: kitajchuk/cardano-nodejs:1.30.1
+    environment:
+      CARDANO_NODE_SOCKET_PATH: /ipc/node.socket
+    volumes:
+      - node-ipc:/ipc
+      - ./net:/app
+    ports:
+      - 8888:8888
+    entrypoint: ["/app/node_modules/.bin/nodemon", "/app/index.js"]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        compress: "true"
+        max-file: "10"
+        max-size: "50m"
+    networks:
+      - test
+
+networks:
+  test:
 
 volumes:
   node-mainnet-db:

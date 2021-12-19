@@ -1,13 +1,13 @@
 {
   "name": "popsiclepropaganda",
   "version": "0.1.0",
-  "description": "Learning Cardano with the Testnet Magics",
+  "description": "Learning Cardano Blockchain Development",
   "private": true,
   "scripts": {
+    "preinstall": "cd net && yarn",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:network": "env-cmd --file .env docker-compose --project-name cardano up",
     "stop:network": "env-cmd --file .env docker-compose --project-name cardano down",
-    "start:server": "env-cmd --file .env nodemon ./net/index.js",
     "start:client": "cra-preact start",
     "build:client": "cra-preact build",
     "test:client": "cra-preact test",
@@ -20,7 +20,10 @@
     "@testing-library/user-event": "^12.1.10",
     "classnames": "^2.2.6",
     "cra-preact": "^0.4.0",
+    "css-loader": "^6.5.1",
+    "env-cmd": "^10.1.0",
     "nanoid": "^3.1.30",
+    "node-sass": "^6.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
@@ -28,21 +31,6 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"
-  },
-  "devDependencies": {
-    "cardano-wallet-js": "^1.2.3",
-    "cardanocli-js": "^4.0.1",
-    "copy-webpack-plugin": "^10.0.0",
-    "css-loader": "^6.5.1",
-    "env-cmd": "^10.1.0",
-    "html-webpack-plugin": "^5.5.0",
-    "ipfs": "^0.60.0",
-    "ipfs-core": "^0.12.1",
-    "jsonwebtoken": "^8.5.1",
-    "node-sass": "^5.0.0",
-    "nodemon": "^2.0.15",
-    "shelljs": "^0.8.4",
-    "ws": "^8.3.0"
   },
   "eslintConfig": {
     "extends": [
