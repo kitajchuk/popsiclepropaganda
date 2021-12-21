@@ -20,3 +20,5 @@ RUN tar -xvf /cardano/cardano-node-${CARDANO_NODE_VERSION}-linux.tar.gz -C /card
 RUN rm -rf /cardano/cardano-node-${CARDANO_NODE_VERSION}-linux.tar.gz
 
 RUN mv /cardano/cardano-cli /usr/local/bin
+
+RUN npm i -g nodemon

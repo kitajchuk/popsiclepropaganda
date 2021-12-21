@@ -52,7 +52,7 @@ services:
       - ./app:/app
     ports:
       - 8888:8888
-    entrypoint: ["/app/node_modules/.bin/nodemon", "/app/index.js"]
+    entrypoint: ["nodemon", "/app/index.js"]
     restart: on-failure
     logging:
       driver: "json-file"
