@@ -69,7 +69,7 @@ export default function Wallets({sock}) {
   };
 
   return (
-    <section className="pp__wallets">
+    <section className="pp__wallets -ppwrap">
       {!!wallets.length && wallets.map((wallet) => {
         return (
           <div className="pp__wallet" key={wallet.id}>

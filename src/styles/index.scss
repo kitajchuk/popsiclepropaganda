@@ -3,7 +3,6 @@
 /******************************************************************************
  * Main structure
 *******************************************************************************/
-
 .pp {
   max-width: $max-width;
   margin: 0 auto;
@@ -72,7 +71,6 @@
 .pp__bump {
   margin-top: 32px;
   width: 100%;
-  max-width: 420px;
 }
 
 /******************************************************************************
@@ -82,7 +80,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 420px;
 
   & + .pp__wallet {
     margin-top: 16px;
@@ -115,7 +112,6 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 420px;
   flex-wrap: wrap;
 }
 
@@ -144,6 +140,22 @@
   border-radius: 6px;
   border: 2px solid $white;
   margin-bottom: 32px;
+  width: 100%;
+}
+
+.pp__inputs {
+  width: 100%;
+}
+
+/******************************************************************************
+ * Faucet
+*******************************************************************************/
+.pp__faucet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
 }
 
 /******************************************************************************
@@ -217,5 +229,17 @@
 
   span {
     color: $white;
+  }
+}
+
+/******************************************************************************
+ * Modifiers
+*******************************************************************************/
+.-ppwrap {
+  width: 640px;
+  max-width: 640px;
+
+  @media (max-width: 640px) {
+    width: 100%;
   }
 }

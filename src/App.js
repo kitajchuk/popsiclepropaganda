@@ -11,6 +11,7 @@ import { selectError } from './store/selectors';
 import Wallets from './components/wallets';
 import Wallet from './components/wallet';
 import Toast from './components/toast';
+import Faucet from './components/faucet';
 
 function withSocket(WrappedComponent) {
   return ({...props}) => {
@@ -79,6 +80,11 @@ function App({sock}) {
                 wallets
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/faucet" className="pp__link" exact activeClassName="active">
+                faucet
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <main className="pp__main">
@@ -88,6 +94,9 @@ function App({sock}) {
             </Route>
             <Route exact path="/wallet/:id">
               <Wallet sock={sock} />
+            </Route>
+            <Route exact path="/faucet">
+              <Faucet sock={sock} />
             </Route>
           </Switch>
         </main>

@@ -23,7 +23,7 @@ export default function Wallet({sock}) {
   }, [wallet, setName]);
 
   return wallet ? (
-    <section className="pp__wallet">
+    <section className="pp__wallet -ppwrap">
       <div className="pp__funds">
         <div>available funds: {wallet.totalBalance / 1e6} ADA</div>
         <div>total rewards: {wallet.rewardBalance / 1e6} ADA</div>

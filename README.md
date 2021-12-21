@@ -11,7 +11,7 @@ This is a playground to learn Cardano concepts by practically implementing them.
 
 ### Low-level scripts
 
-You can find some low-level scripts at [./app/utils/rawtx.js](./app/utils/rawtx.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
+You can find some low-level scripts at [./app/utils/rawtx/index.js](./app/utils/rawtx/index.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
 
 ### NFTs
 
@@ -35,7 +35,7 @@ echo "NETWORK=mainnet" > .env
 
 ### Backend commands
 
-Currently this code operates as a *full-node wallet*, offline as a desktop playground. You can interface with [cardano-wallet](https://github.com/input-output-hk/cardano-wallet) with a `CRUD` API. That is to say you can Create, Read/Recover, Update and Destroy your wallets.
+This code acts as a *full-node wallet*, offline as a desktop playground. You can interface with [cardano-wallet](https://github.com/input-output-hk/cardano-wallet) with a `CRUD` API. That is to say you can Create, Read/Recover, Update and Destroy your wallets. You can also interface with the low-level scripts via the frontend `faucet` which acts as a sort of `UTxO` playground for the Testnet.
 
 - `yarn start:network`
 - `yarn stop:network`
