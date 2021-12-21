@@ -4,14 +4,14 @@
   "description": "Learning Cardano Blockchain Development",
   "private": true,
   "scripts": {
-    "preinstall": "cd net && yarn",
+    "preinstall": "cd app && yarn",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:network": "env-cmd --file .env docker-compose --project-name cardano up",
-    "stop:network": "env-cmd --file .env docker-compose --project-name cardano down",
-    "start:client": "react-scripts start",
-    "build:client": "react-scripts build",
-    "test:client": "react-scripts test",
-    "eject:client": "react-scripts eject"
+    "start:app": "env-cmd --file .env docker-compose --project-name cardano up",
+    "stop:app": "env-cmd --file .env docker-compose --project-name cardano down",
+    "start:src": "react-scripts start",
+    "build:src": "react-scripts build",
+    "test:src": "react-scripts test",
+    "eject:src": "react-scripts eject"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.0",

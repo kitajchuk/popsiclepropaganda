@@ -3,28 +3,19 @@ popsiclepropaganda
 
 > Learning Cardano Blockchain Development
 
-<img src="./public/assets/RainbowPopsicle.png" width="128" />
+<img src="./public/rainbowpp.png" width="100%" />
 
 ## Getting started
 
 This is a playground to learn Cardano concepts by practically implementing them. Currently focusing on transactions, wallets and native assets (tokens, NFTs). This all began by from a low-level approach by installing the [cardano-node](https://github.com/input-output-hk/cardano-node) from source and completing the [native assets examples](https://developers.cardano.org/docs/native-tokens/minting) on their developer portal.
 
-### Low-level scripts
+## Development
 
-You can find some low-level scripts at [./app/utils/rawtx/index.js](./app/utils/rawtx/index.js) for doing things like sending ADA, minting native tokens and NFTs, burning tokens and sending tokens. These scripts are for personal academic purposes in order to learn how to work with the cardano `UTxO` model.
-
-### NFTs
-
-Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
-
-- [PP1](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031)
-- [PP2](https://testnet.cardanoscan.io/token/b9f1705170d75f144a4fd0636c2928b2bb39a5ab4db343978a0a1568505032)
-
-### Install
+#### Install
 
 ```shell
 # deps
-yarn
+yarn install
 
 # for testnet
 echo "NETWORK=testnet" > .env
@@ -33,14 +24,28 @@ echo "NETWORK=testnet" > .env
 echo "NETWORK=mainnet" > .env
 ```
 
-### Backend commands
+## Backend commands
 
-This code acts as a *full-node wallet*, offline as a desktop playground. You can interface with [cardano-wallet](https://github.com/input-output-hk/cardano-wallet) with a `CRUD` API. That is to say you can Create, Read/Recover, Update and Destroy your wallets. You can also interface with the low-level scripts via the frontend `faucet` which acts as a sort of `UTxO` playground for the Testnet.
+- `yarn start:app`
+- `yarn stop:app`
 
-- `yarn start:network`
-- `yarn stop:network`
+The [docker-compose](./docker-compose.yml) file is a modified, maintained source from [input-output-hk/cardano-wallet](https://github.com/input-output-hk/cardano-wallet). A new service, [cardano-nodejs](https://hub.docker.com/r/kitajchuk/cardano-nodejs), has been added which runs a [nodejs](https://nodejs.org/en/) container with [cardano-cli](https://developers.cardano.org/docs/get-started/running-cardano#querying-the-cardano-blockchain). The [CARDANO_NODE_SOCKET_PATH](https://developers.cardano.org/docs/get-started/running-cardano#querying-the-cardano-blockchain) environment variable is set to the shared `node-ipc` volume between the services. This nodejs container can run any nodejs app you want from the `./net` directory which mounts as a shared volume between your host machine and the nodejs container.
 
-Always start and stop the network with the `yarn` commands for graceful usage of `docker-compose`. The `docker-compose.yml` contains a custom service called [cardano-nodejs](https://hub.docker.com/r/kitajchuk/cardano-nodejs) which runs a `nodejs` container with the `cardano-cli`. This container serves `./net` as a backend web client for the frontend react app. The docker image is built and published from this [Dockerfile](./Dockerfile):
+This project is a playground using [cardano-wallet-js](https://developers.cardano.org/docs/get-started/cardano-wallet-js) with a `CRUD` API. That is to say you can Create, Read/Recover, Update and Destroy your wallets.
+
+This project also has a client layer for low-level scripts via the `faucet` which acts as a sort of `UTxO` playground for the Testnet. You can find them at [./app/utils/rawtx/index.js](./app/utils/rawtx/index.js). There are methods for doing things like sending ADA, [minting native tokens](https://developers.cardano.org/docs/native-tokens/minting) and [NFTs](https://developers.cardano.org/docs/native-tokens/minting-nfts), [burning tokens](https://developers.cardano.org/docs/native-tokens/minting#burning-token) and sending tokens. You can fund your `payment.addr` with `tADA` from the [Testnet faucet](https://developers.cardano.org/docs/integrate-cardano/testnet-faucet/).
+
+```shell
+# the yarn commands use docker-compose
+# the project uses env-cmd for your local variables
+env-cmd --file .env docker-compose --project-name cardano up
+env-cmd --file .env docker-compose --project-name cardano down
+
+# but technically you can also just:
+NETWORK=testnet docker-compose up
+```
+
+The cardano-nodejs image is built from the [Dockerfile](./Dockerfile) in this project.
 
 ```shell
 # build from ./Dockerfile
@@ -50,17 +55,21 @@ docker build --tag kitajchuk/cardano-nodejs:1.30.1 .
 docker push kitajchuk/cardano-nodejs:1.30.1
 ```
 
-### Frontend commands
+## Frontend commands
+
+- `yarn start:src`
 
 The frontend is currently a [cra](https://create-react-app.dev) app. I'm considering ejecting and using [electron](https://github.com/electron/electron) so this can be Desktop software.
 
-- `yarn start:client`
-- `yarn build:client`
-- `yarn test:client`
-- `yarn eject:client`
 
-
-### Bin commands
+## Bin commands
 
 - `node ./bin/generate-nfts.js`
   - Generates `JSON` for `NFT` metadata (rough draft)
+
+#### NFTs
+
+Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
+
+- [PP1](https://testnet.cardanoscan.io/token/6073ac5ca6373410319f896ca88d33094d5da8d37d505ab70848b90b505031)
+- [PP2](https://testnet.cardanoscan.io/token/b9f1705170d75f144a4fd0636c2928b2bb39a5ab4db343978a0a1568505032)

@@ -1,8 +1,8 @@
 /**
  * 
- * The `net` backend dir is linked as a volume to the cardano-nodejs docker container
+ * The `app` backend dir is linked as a volume to the cardano-nodejs docker container
  * It mounts to /app within the docker container:
- * ./net:/app
+ * ./app:/app
  * tmp/
  *     ├── burning.raw                    # Raw transaction to burn token
  *     ├── burning.signed                 # Signed transaction to burn token

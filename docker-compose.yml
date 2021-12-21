@@ -49,7 +49,7 @@ services:
       CARDANO_NODE_SOCKET_PATH: /ipc/node.socket
     volumes:
       - node-ipc:/ipc
-      - ./net:/app
+      - ./app:/app
     ports:
       - 8888:8888
     entrypoint: ["/app/node_modules/.bin/nodemon", "/app/index.js"]
