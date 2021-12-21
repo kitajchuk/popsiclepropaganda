@@ -11,6 +11,8 @@ export default function Wallet({sock}) {
   const wallets = useSelector(selectWallets);
   const wallet = wallets.find(wallet => wallet.id === params.id);
   const [name, setName] = useState('');
+  // const [nfts, setNFTs] = useState([]);
+  // const [tokens, setTokens] = useState([]);
   const [oldPassphrase, setOldPassphrase] = useState('');
   const [newPassphrase, setNewPassphrase] = useState('');
   const [isModal, setIsModal] = useState(false);
@@ -18,6 +20,24 @@ export default function Wallet({sock}) {
   useEffect(() => {
     if (wallet) {
       setName(wallet.name);
+
+      // Figure out how to determine current tokens held in wallet...
+      // let tkns = [];
+      // let nfts = [];
+
+      // wallet.transactions.forEach((tx) => {
+      //   tx.outputs.forEach((ot) => {
+      //     if (ot.assets.length) {
+      //       tkns = tkns.concat(ot.assets);
+      //     }
+      //   });
+
+      //   if (tx.metadata) {
+      //     nfts.push(tx.metadata);
+      //   }
+      // });
+
+      // console.log(tkns, nfts);
     }
   
   }, [wallet, setName]);
@@ -82,6 +102,20 @@ export default function Wallet({sock}) {
         <button className="delete" onClick={() => setIsModal(!isModal)}>
           delete wallet
         </button>
+      </div>
+      <div className="pp__addrs">
+        <div>unused addresses</div>
+        {wallet.unusedAddresses.map((addr) => {
+          return (
+            <input
+              key={addr.id}
+              type="text"
+              name="address"
+              value={addr.id}
+              readOnly
+            />
+          );
+        })}
       </div>
       {isModal && (
         <Modal

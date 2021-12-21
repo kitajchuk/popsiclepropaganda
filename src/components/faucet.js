@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 
 export default function Faucet({sock}) {
   const utxo = useSelector(selectUtxo);
-  const coin = utxo.transactions.reduce((prev, curr) => {
+  const coin = utxo ? utxo.transactions.reduce((prev, curr) => {
     return prev + curr.funds;
-  }, 0);
+  }, 0) : 0;
 
   return utxo ? (
     <div className="pp__faucet -ppwrap">

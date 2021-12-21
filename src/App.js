@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { update, toast, reset } from './store/reducers';
+import { CreditCard, Droplet } from 'react-feather';
 import { selectError } from './store/selectors';
 import Wallets from './components/wallets';
 import Wallet from './components/wallet';
@@ -70,29 +71,47 @@ function App({sock}) {
         {error && (
           <Toast error={error} />
         )}
-        <header className="pp__head">
-          <img src="/assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
-        </header>
         <nav className="pp__navi">
           <ul>
             <li>
               <NavLink to="/" className="pp__link" exact activeClassName="active">
-                wallets
+                <img src="/assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/wallets" className="pp__link" activeClassName="active">
+                <CreditCard />
               </NavLink>
             </li>
             <li>
               <NavLink to="/faucet" className="pp__link" exact activeClassName="active">
-                faucet
+                <Droplet />
               </NavLink>
             </li>
           </ul>
         </nav>
-        <main className="pp__main">
+        <header className="pp__mast">
           <Switch>
             <Route exact path="/">
+              home
+            </Route>
+            <Route exact path="/wallets">
+              wallets
+            </Route>
+            <Route exact path="/wallets/:id">
+              wallet
+            </Route>
+            <Route exact path="/faucet">
+              faucet
+            </Route>
+          </Switch>
+        </header>
+        <main className="pp__main">
+          <Switch>
+            <Route exact path="/wallets">
               <Wallets sock={sock} />
             </Route>
-            <Route exact path="/wallet/:id">
+            <Route exact path="/wallets/:id">
               <Wallet sock={sock} />
             </Route>
             <Route exact path="/faucet">
