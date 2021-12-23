@@ -12,6 +12,8 @@ webSocketServer.on('listening', () => {
 webSocketServer.on('connection', (ws) => {
   withWallet(ws);
   withFaucet(ws);
+
+  console.log('wss connected');
 });
 
 initFaucet();

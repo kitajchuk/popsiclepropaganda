@@ -6,7 +6,7 @@ const {
   PRIV,
   getAddress,
   genPaymentAddr,
-  getAddressInfo,
+  getAddressUtxo,
 } = require('../rawtx');
 
 function initFaucet() {
@@ -40,16 +40,16 @@ function withFaucet(ws) {
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
-    if (event === 'faucet_connect') {
-      let utxo = await getAddressInfo();
+    if (event === 'faucet_utxo') {
+      let utxo = await getAddressUtxo();
 
-      ws.send(await getResponseFE('faucet_connected', { utxo }));
+      ws.send(await getResponseFE(event, { utxo }));
     }
 
     if (event === 'faucet_query') {
-      let query = await getAddressInfo(data.address);
+      let query = await getAddressUtxo(data.address);
 
-      ws.send(await getResponseFE('faucet_queried', { query }));
+      ws.send(await getResponseFE(event, { query }));
     }
   });
 }

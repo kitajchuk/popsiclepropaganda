@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { selectWallets, selectSeed, selectNetwork } from '../store/selectors';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-feather';
+import { selectWallets, selectSeed, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
+import NotReady from './notready';
 
 export default function Wallets({sock}) {
   const seed = useSelector(selectSeed);
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
-  const notReady = !network || (network && network.sync_progress.status !== 'ready');
+  const ready = useSelector(selectReady);
   const [isModal, setIsModal] = useState(false);
   const [name, setName] = useState('');
   const [passphrase, setPassphrase] = useState('');
@@ -17,6 +18,10 @@ export default function Wallets({sock}) {
   const [mode, setMode] = useState('');
   const [phase, setPhase] = useState('initial');
   const [words, setWords] = useState([]);
+
+  useEffect(() => {
+    sock.send('wallet_wallets');
+  }, [sock]);
 
   const resetAll = () => {
     setIsModal(false);
@@ -71,11 +76,8 @@ export default function Wallets({sock}) {
     }
   };
 
-  return notReady ? (
-    <section className="pp__wallets pp__bump -ppwrap">
-      {/* https://input-output-hk.github.io/cardano-wallet/api/edge/#tag/Network */}
-      {network ? `network sync progress: ${network.sync_progress.progress}%` : 'network offline...'}
-    </section>
+  return !ready ? (
+    <NotReady network={network} />
   ) : (
     <section className="pp__wallets -ppwrap">
       {!!wallets.length && wallets.map((wallet) => {

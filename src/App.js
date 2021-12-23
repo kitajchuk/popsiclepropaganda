@@ -19,12 +19,12 @@ function withSocket(WrappedComponent) {
     const dispatch = useDispatch();
     const webSocket = new WebSocket('ws://localhost:8888', 'echo-protocol');
 
+    let pollTimer = null;
+
     webSocket.onmessage = (message) => {
       const json = JSON.parse(message.data);
 
-      // console.log(json);
-
-      if (/connected/.test(json.event)) {
+      if (/connect/.test(json.event)) {
         console.log('ws connected');
       }
 
@@ -34,14 +34,24 @@ function withSocket(WrappedComponent) {
         return;
       }
 
+      if (json.network && json.network.sync_progress.status !== 'ready' && !pollTimer) {
+        pollTimer = setInterval(() => {
+          if (json.network && json.network.sync_progress.status === 'ready') {
+            clearInterval(pollTimer);
+          } else {
+            console.log('polling network for readyness...');
+            webSocket.send(JSON.stringify({ event: 'wallet_network' }));
+          }
+        }, 1000);
+      }
+
       dispatch(update(json));
     };
 
     webSocket.onopen = () => {
       console.log('ws opened');
 
-      webSocket.send(JSON.stringify({ event: 'wallet_connect', data: {} }));
-      webSocket.send(JSON.stringify({ event: 'faucet_connect', data: {} }));
+      webSocket.send(JSON.stringify({ event: 'wallet_network' }));
     };
 
     webSocket.onclose = () => {
@@ -50,7 +60,16 @@ function withSocket(WrappedComponent) {
 
     const sock = {
       send: (event, data) => {
-        webSocket.send(JSON.stringify({ event, data }));
+        if (webSocket.readyState !== 1) {
+          let timer = setInterval(() => {
+            if (webSocket.readyState === 1) {
+              clearInterval(timer);
+              webSocket.send(JSON.stringify({ event, data }));
+            }
+          }, 100);
+        } else {
+          webSocket.send(JSON.stringify({ event, data }));
+        }
       },
 
       toast: (message) => {

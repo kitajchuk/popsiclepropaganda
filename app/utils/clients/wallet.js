@@ -39,13 +39,24 @@ function withWallet(ws) {
     });
   };
 
+  let timer = null;
+
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
-    if (event === 'wallet_connect') {
+    if (event === 'wallet_network') {
+      let network = await walletServer.getNetworkInformation();
+
+      ws.send(JSON.stringify({
+        event,
+        network,
+      }));
+    }
+
+    if (event === 'wallet_wallets') {
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('wallet_connected', wallets));
+      ws.send(await getResponseFE(event, wallets));
     }
 
     if (event === 'wallet_create' || event === 'wallet_recover') {
@@ -64,7 +75,7 @@ function withWallet(ws) {
     
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(`${event.replace(/e$/, '')}ed`, wallets));
+      ws.send(await getResponseFE(event, wallets));
     }
 
     if (event === 'wallet_update') {
@@ -88,7 +99,7 @@ function withWallet(ws) {
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('wallet_updated', wallets));
+      ws.send(await getResponseFE(event, wallets));
     }
 
     if (event === 'wallet_destroy') {
@@ -98,7 +109,7 @@ function withWallet(ws) {
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('wallet_deleted', wallets));
+      ws.send(await getResponseFE(event, wallets));
     }
   });
 }

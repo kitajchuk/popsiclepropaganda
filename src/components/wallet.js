@@ -5,21 +5,26 @@ import {
   NavLink,
   Route,
 } from 'react-router-dom';
-import { selectWallets, selectNetwork } from '../store/selectors';
 import { useSelector } from 'react-redux';
+import { selectWallets, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
+import NotReady from './notready';
 
 export default function Wallet({sock}) {
   const params = useParams();
   const history = useHistory();
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
+  const ready = useSelector(selectReady);
   const wallet = wallets.find(wallet => wallet.id === params.id);
-  const notReady = !wallet || !network || (network && network.sync_progress.status !== 'ready');
   const [name, setName] = useState('');
   const [oldPassphrase, setOldPassphrase] = useState('');
   const [newPassphrase, setNewPassphrase] = useState('');
   const [isModal, setIsModal] = useState(false);
+
+  useEffect(() => {
+    sock.send('wallet_wallets');
+  }, [sock]);
 
   useEffect(() => {
     if (wallet && !name) {
@@ -29,25 +34,9 @@ export default function Wallet({sock}) {
   
   }, [wallet, name, setName]);
 
-  // todo: in_ledger for transaction inputs/outputs
-  // useEffect(() => {
-  //   if (wallet && !name) {
-  //     console.log('query addys');
-  //     wallet.usedAddresses.forEach((addy) => {
-  //       sock.send('faucet_query', {
-  //         address: addy.id,
-  //       });
-  //     });
-  //   }
-
-  // }, [sock, name, wallet]);
-
-  return notReady ? (
-    <section className="pp__wallet pp__bump -ppwrap">
-      {/* https://input-output-hk.github.io/cardano-wallet/api/edge/#tag/Network */}
-      {network ? `network sync progress: ${network.sync_progress.progress}%` : 'network offline...'}
-    </section>
-  ) : (
+  return !ready ? (
+    <NotReady network={network} />
+  ) : wallet ? (
     <>
       <nav className="pp__tabi">
         <ul>
@@ -182,5 +171,5 @@ export default function Wallet({sock}) {
         </Route>
       </section>
     </>
-  );
+  ) : null;
 }

@@ -98,7 +98,7 @@ function getPolicyID() {
  * @param {string} addy Optional to pass in a different address to query
  * @returns {object} The wallet/transaction information
  */
-function getAddressInfo(addy) {
+function getAddressUtxo(addy) {
   const address = addy || getAddress();
 
   const command = shell.exec(`
@@ -154,11 +154,11 @@ function getAddressInfo(addy) {
  * @param {string} txhash The current txhash used
  * @param {function} resolve The Promise resolve method
  */
-function resolveWithNewUTxO(txhash, resolve) {
-  let info = getAddressInfo();
+function resolveWithNewUtxo(txhash, resolve) {
+  let info = getAddressUtxo();
 
   while (info.transactions[0].txhash === txhash) {
-    info = getAddressInfo();
+    info = getAddressUtxo();
 
     if (Date.now() % 2 === 1) {
       console.log('polling for new UTxO on the blockchain...');
@@ -185,7 +185,7 @@ function mintNFT(receiver, tokenname, metadata) {
     const {
       address,
       transactions,
-    } = getAddressInfo();
+    } = getAddressUtxo();
 
     const {
       tokens,
@@ -328,7 +328,7 @@ function mintNFT(receiver, tokenname, metadata) {
           --testnet-magic 1097911063
       `, SHELL_OUT);
 
-      resolveWithNewUTxO(txhash, resolve);
+      resolveWithNewUtxo(txhash, resolve);
     
     // Fallback to log and reject on whatever error we got...
     } else {
@@ -350,7 +350,7 @@ function mintToken(token, amount) {
     const {
       transactions,
       address,
-    } = getAddressInfo();
+    } = getAddressUtxo();
   
     const {
       tokens,
@@ -445,7 +445,7 @@ function mintToken(token, amount) {
         --testnet-magic 1097911063
     `, SHELL_OPTS);
 
-    resolveWithNewUTxO(txhash, resolve);
+    resolveWithNewUtxo(txhash, resolve);
   });
 }
 
@@ -460,7 +460,7 @@ function sendCoin(amount, receiver) {
     const {
       transactions,
       address,
-    } = getAddressInfo();
+    } = getAddressUtxo();
   
     const {
       tokens,
@@ -513,7 +513,7 @@ function sendCoin(amount, receiver) {
         --testnet-magic 1097911063
     `, SHELL_OPTS);
 
-    resolveWithNewUTxO(txhash, resolve);
+    resolveWithNewUtxo(txhash, resolve);
   });
 }
 
@@ -529,7 +529,7 @@ function sendToken(token, amount, receiver) {
     const {
       transactions,
       address,
-    } = getAddressInfo();
+    } = getAddressUtxo();
   
     const {
       tokens,
@@ -591,7 +591,7 @@ function sendToken(token, amount, receiver) {
         --testnet-magic 1097911063
     `, SHELL_OPTS);
 
-    resolveWithNewUTxO(txhash, resolve);
+    resolveWithNewUtxo(txhash, resolve);
   });
 }
 
@@ -606,7 +606,7 @@ function burnToken(token, amount) {
     const {
       transactions,
       address,
-    } = getAddressInfo();
+    } = getAddressUtxo();
   
     const {
       tokens,
@@ -670,7 +670,7 @@ function burnToken(token, amount) {
         --testnet-magic 1097911063
     `, SHELL_OPTS);
 
-    resolveWithNewUTxO(txhash, resolve);
+    resolveWithNewUtxo(txhash, resolve);
   });
 }
 
@@ -810,10 +810,10 @@ module.exports = {
   getProtocol,
   genProtocol,
   getFutureSlot,
-  getAddressInfo,
+  getAddressUtxo,
   genPaymentAddr,
   cleanTransients,
-  resolveWithNewUTxO,
+  resolveWithNewUtxo,
 
   // Constants
   TMP,
