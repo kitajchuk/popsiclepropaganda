@@ -30,9 +30,9 @@ function initFaucet() {
 }
 
 function withFaucet(ws) {
-  const getResponseFE = async (event, info) => {
+  const getResponseFE = async (event, data) => {
     return JSON.stringify({
-      utxo: info,
+      ...data,
       event,
     });
   };
@@ -40,10 +40,16 @@ function withFaucet(ws) {
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
-    if (event === 'connect') {
-      let info = await getAddressInfo();
+    if (event === 'faucet_connect') {
+      let utxo = await getAddressInfo();
 
-      ws.send(await getResponseFE('connected', info));
+      ws.send(await getResponseFE('faucet_connected', { utxo }));
+    }
+
+    if (event === 'faucet_query') {
+      let query = await getAddressInfo(data.address);
+
+      ws.send(await getResponseFE('faucet_queried', { query }));
     }
   });
 }

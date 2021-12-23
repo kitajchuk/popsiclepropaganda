@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
+  network: null,
   wallets: [],
+  query: {},
   error: null,
   seed: null,
   utxo: null,
@@ -13,10 +15,12 @@ export const slice = createSlice({
   initialState,
   reducers: {
     update(state, action) {
-      const { wallets, utxo, seed } = action.payload;
+      const { wallets, utxo, seed, network, query } = action.payload;
+      state.network = network || state.network;
       state.wallets = wallets || state.wallets;
       state.seed = seed || state.seed;
       state.utxo = utxo || state.utxo;
+      if (query) state.query[query.address] = query;
       state.error = null;
     },
     toast(state, action) {

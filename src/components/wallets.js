@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { selectWallets, selectSeed } from '../store/selectors';
+import { selectWallets, selectSeed, selectNetwork } from '../store/selectors';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-feather';
 import Modal from './modal';
 
 export default function Wallets({sock}) {
   const seed = useSelector(selectSeed);
   const wallets = useSelector(selectWallets);
+  const network = useSelector(selectNetwork);
+  const notReady = !network || (network && network.sync_progress.status !== 'ready');
   const [isModal, setIsModal] = useState(false);
   const [name, setName] = useState('');
   const [passphrase, setPassphrase] = useState('');
@@ -26,14 +29,14 @@ export default function Wallets({sock}) {
   const confirmHandler = () => {
     if (passphrase.length >= 10 && name !== '') {
       if (mode === 'create') {
-        sock.send('create', {
+        sock.send('wallet_create', {
           seed,
           name,
           passphrase,
         });
       }
       if (mode === 'recover') {
-        sock.send('recover', {
+        sock.send('wallet_recover', {
           name,
           seed: recovery,
           passphrase,
@@ -68,12 +71,18 @@ export default function Wallets({sock}) {
     }
   };
 
-  return (
+  return notReady ? (
+    <section className="pp__wallets pp__bump -ppwrap">
+      {/* https://input-output-hk.github.io/cardano-wallet/api/edge/#tag/Network */}
+      {network ? `network sync progress: ${network.sync_progress.progress}%` : 'network offline...'}
+    </section>
+  ) : (
     <section className="pp__wallets -ppwrap">
       {!!wallets.length && wallets.map((wallet) => {
         return (
-          <div className="pp__wallet" key={wallet.id}>
+          <div className="pp__wallet pp__bump" key={wallet.id}>
             <NavLink to={`/wallets/${wallet.id}`} className="pp__wallet__link">
+              <Link />
               {wallet.name}
             </NavLink>
           </div>
@@ -121,7 +130,7 @@ export default function Wallets({sock}) {
             {mode === 'create' ? (
               <>
                 {phase === 'initial' && (
-                  <textarea readOnly>{seed}</textarea>
+                  <textarea readOnly value={seed}></textarea>
                 )}
                 <div className="pp__phrase">
                   {phase === 'initial' && (
@@ -156,7 +165,8 @@ export default function Wallets({sock}) {
                   name="seed"
                   placeholder="enter recovery phrase"
                   onChange={(e) => setRecovery(e.target.value)}
-                >{recovery}</textarea>
+                  value={recovery}
+                />
               </>
             )}
             

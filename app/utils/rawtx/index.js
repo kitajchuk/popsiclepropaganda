@@ -95,10 +95,11 @@ function getPolicyID() {
 /**
  * Get the TxHash, TxIx and current wallet Amount
  * Also parses native tokens for the address
+ * @param {string} addy Optional to pass in a different address to query
  * @returns {object} The wallet/transaction information
  */
-function getAddressInfo() {
-  const address = getAddress();
+function getAddressInfo(addy) {
+  const address = addy || getAddress();
 
   const command = shell.exec(`
     cardano-cli query utxo \

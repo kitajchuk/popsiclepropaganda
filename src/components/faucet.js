@@ -1,14 +1,21 @@
-import { selectUtxo } from '../store/selectors';
+import { selectUtxo, selectNetwork } from '../store/selectors';
 import { useSelector } from 'react-redux';
 
 export default function Faucet({sock}) {
   const utxo = useSelector(selectUtxo);
-  const coin = utxo ? utxo.transactions.reduce((prev, curr) => {
+  const network = useSelector(selectNetwork);
+  const notReady = !utxo || !network || (network && network.sync_progress.status !== 'ready');
+  const coin = notReady ? 0 : utxo.transactions.reduce((prev, curr) => {
     return prev + curr.funds;
-  }, 0) : 0;
+  }, 0);
 
-  return utxo ? (
-    <div className="pp__faucet -ppwrap">
+  return notReady ? (
+    <section className="pp__faucet pp__bump -ppwrap">
+      {/* https://input-output-hk.github.io/cardano-wallet/api/edge/#tag/Network */}
+      {network ? `network sync progress: ${network.sync_progress.progress}%` : 'network offline...'}
+    </section>
+  ) : (
+    <div className="pp__faucet pp__bump -ppwrap">
       <div className="pp__funds">
         <div>total coin: {coin / 1e6} ADA</div>
       </div>
@@ -21,5 +28,5 @@ export default function Faucet({sock}) {
         />
       </div>
     </div>
-  ) : null;
+  );
 }

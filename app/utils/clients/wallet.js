@@ -27,6 +27,7 @@ function withWallet(ws) {
           transactions: await wallet.getTransactions(new Date(2021, 0, 1), new Date(Date.now())),
         };
       })),
+      network: await walletServer.getNetworkInformation(),
     });
   };
 
@@ -41,13 +42,13 @@ function withWallet(ws) {
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
-    if (event === 'connect') {
+    if (event === 'wallet_connect') {
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('connected', wallets));
+      ws.send(await getResponseFE('wallet_connected', wallets));
     }
 
-    if (event === 'create' || event === 'recover') {
+    if (event === 'wallet_create' || event === 'wallet_recover') {
       let wallet;
 
       try {
@@ -63,10 +64,10 @@ function withWallet(ws) {
     
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(`${event}ed`, wallets));
+      ws.send(await getResponseFE(`${event.replace(/e$/, '')}ed`, wallets));
     }
 
-    if (event === 'update') {
+    if (event === 'wallet_update') {
       let wallet = await walletServer.getShelleyWallet(data.id);
 
       if (data.name && (data.name !== wallet.name)) {
@@ -87,17 +88,17 @@ function withWallet(ws) {
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('updated', wallets));
+      ws.send(await getResponseFE('wallet_updated', wallets));
     }
 
-    if (event === 'destroy') {
+    if (event === 'wallet_destroy') {
       let wallet = await walletServer.getShelleyWallet(data.id);
 
       await wallet.delete();
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE('deleted', wallets));
+      ws.send(await getResponseFE('wallet_deleted', wallets));
     }
   });
 }

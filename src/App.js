@@ -22,7 +22,9 @@ function withSocket(WrappedComponent) {
     webSocket.onmessage = (message) => {
       const json = JSON.parse(message.data);
 
-      if (json.event === 'connected') {
+      // console.log(json);
+
+      if (/connected/.test(json.event)) {
         console.log('ws connected');
       }
 
@@ -38,7 +40,8 @@ function withSocket(WrappedComponent) {
     webSocket.onopen = () => {
       console.log('ws opened');
 
-      webSocket.send(JSON.stringify({ event: 'connect', data: {} }));
+      webSocket.send(JSON.stringify({ event: 'wallet_connect', data: {} }));
+      webSocket.send(JSON.stringify({ event: 'faucet_connect', data: {} }));
     };
 
     webSocket.onclose = () => {
@@ -74,17 +77,17 @@ function App({sock}) {
         <nav className="pp__navi">
           <ul>
             <li>
-              <NavLink to="/" className="pp__link" exact activeClassName="active">
+              <NavLink to="/" exact activeClassName="active">
                 <img src="/assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
               </NavLink>
             </li>
             <li>
-              <NavLink to="/wallets" className="pp__link" activeClassName="active">
+              <NavLink to="/wallets" activeClassName="active">
                 <CreditCard />
               </NavLink>
             </li>
             <li>
-              <NavLink to="/faucet" className="pp__link" exact activeClassName="active">
+              <NavLink to="/faucet" exact activeClassName="active">
                 <Droplet />
               </NavLink>
             </li>
@@ -98,7 +101,10 @@ function App({sock}) {
             <Route exact path="/wallets">
               wallets
             </Route>
-            <Route exact path="/wallets/:id">
+            <Route exact path={[
+              '/wallets/:id',
+              '/wallets/:id/:view',
+            ]}>
               wallet
             </Route>
             <Route exact path="/faucet">
@@ -108,10 +114,16 @@ function App({sock}) {
         </header>
         <main className="pp__main">
           <Switch>
+            <Route exact path="/">
+              <img src="/rainbowpp.png" alt="Rainbow_PP" />
+            </Route>
             <Route exact path="/wallets">
               <Wallets sock={sock} />
             </Route>
-            <Route exact path="/wallets/:id">
+            <Route exact path={[
+              '/wallets/:id',
+              '/wallets/:id/:view',
+            ]}>
               <Wallet sock={sock} />
             </Route>
             <Route exact path="/faucet">

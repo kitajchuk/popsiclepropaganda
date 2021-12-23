@@ -57,6 +57,13 @@ strong {
   font-family: $font-monospace-bold;
 }
 
+pre {
+  text-align: left;
+  width: 100%;
+  border: 1px solid $grey;
+  padding: 32px;
+}
+
 input,
 button,
 textarea {
@@ -78,6 +85,11 @@ textarea {
   & + textarea {
     margin-top: 16px;
   }
+}
+
+input,
+textarea {
+  background-color: #eee;
 }
 
 textarea {
