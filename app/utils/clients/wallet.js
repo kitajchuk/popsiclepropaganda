@@ -17,6 +17,7 @@ function withWallet(ws) {
         return {
           id: wallet.id,
           name: wallet.name,
+          assets: wallet.assets,
           statistics: await wallet.getUtxoStatistics(),
           usedAddresses: await wallet.getUsedAddresses(),
           unusedAddresses: await wallet.getUnusedAddresses(),
@@ -39,11 +40,12 @@ function withWallet(ws) {
     });
   };
 
-  let timer = null;
-
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
+    // This event is meant for polling network readyness
+    // The frontend will emit this once upon socket connection
+    // It will poll this event on an interval anytime readyness drops...
     if (event === 'wallet_network') {
       let network = await walletServer.getNetworkInformation();
 
