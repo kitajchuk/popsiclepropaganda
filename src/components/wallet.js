@@ -23,7 +23,7 @@ export default function Wallet({sock}) {
   const [isModal, setIsModal] = useState(false);
 
   useEffect(() => {
-    sock.send('wallet_wallets');
+    sock.send('wallet_list');
   }, [sock]);
 
   useEffect(() => {
@@ -167,7 +167,28 @@ export default function Wallet({sock}) {
           transactions
         </Route>
         <Route exact path={`/wallets/${wallet.id}/tokens`}>
-          tokens
+          <table className="pp__table">
+            <thead>
+              <th>name</th>
+              <th>policy</th>
+              <th>quantity</th>
+            </thead>
+            <tbody>
+            {wallet.assets.available.map((asset) => {
+              return (
+                <tr>
+                  <td>{asset.asset_name}</td>
+                  <td>
+                    <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} target="_blank" title="Cardano Scan">
+                      {asset.policy_id}
+                    </a>
+                  </td>
+                  <td>{asset.quantity}</td>
+                </tr>
+              );
+            })}
+            </tbody>
+          </table>
         </Route>
       </section>
     </>

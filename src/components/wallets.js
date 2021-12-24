@@ -20,7 +20,7 @@ export default function Wallets({sock}) {
   const [words, setWords] = useState([]);
 
   useEffect(() => {
-    sock.send('wallet_wallets');
+    sock.send('wallet_list');
   }, [sock]);
 
   const resetAll = () => {

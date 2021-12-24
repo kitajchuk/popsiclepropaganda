@@ -40,12 +40,19 @@ function withWallet(ws) {
     });
   };
 
+  // This even is to initialize network polling for the frontend on connection
+  // The frontend will emit `wallet_network` pings until network is ready
+  ws.send(JSON.stringify({
+    event: 'wallet_connected',
+    network: null,
+  }));
+
   ws.on('message', async (message) => {
     const { event, data } = JSON.parse(message);
 
     // This event is meant for polling network readyness
-    // The frontend will emit this once upon socket connection
-    // It will poll this event on an interval anytime readyness drops...
+    // The frontend will emit this on a polling interval
+    // It will poll this event on said interval until network is ready again
     if (event === 'wallet_network') {
       let network = await walletServer.getNetworkInformation();
 
@@ -55,7 +62,7 @@ function withWallet(ws) {
       }));
     }
 
-    if (event === 'wallet_wallets') {
+    if (event === 'wallet_list') {
       let wallets = await walletServer.wallets();
 
       ws.send(await getResponseFE(event, wallets));

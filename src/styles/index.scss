@@ -85,6 +85,7 @@
 .pp__wallet {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
 
   & + .pp__wallet {
@@ -99,8 +100,7 @@
     display: block;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.15);
-    min-width: 420px;
-    max-width: 100%;
+    width: 100%;
     position: relative;
 
     svg {
@@ -112,30 +112,6 @@
 
     @media (max-width: 420px) {
       min-width: 0;
-    }
-  }
-}
-
-.pp__tabi {
-  height: 64px;
-  border-bottom: 1px solid $grey;
-  width: 100%;
-
-  ul {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-  }
-
-  li {
-    a {
-      padding: 0 32px;
-    }
-
-    a.active {
-      color: $blue;
     }
   }
 }
@@ -193,6 +169,45 @@
 
   > input {
     color: $grey;
+  }
+}
+
+.pp__tabi {
+  height: 64px;
+  border-bottom: 1px solid $grey;
+  width: 100%;
+
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  li {
+    a {
+      padding: 0 32px;
+    }
+
+    a.active {
+      color: $blue;
+    }
+  }
+}
+
+.pp__table {
+  width: 100%;
+  border: 1px solid $grey;
+
+  th, td {
+    padding: 16px 32px;
+    border: 1px solid $grey;
+  }
+
+  a {
+    color: $blue;
+    border-bottom: 1px solid $blue;
   }
 }
 
@@ -262,6 +277,23 @@
   }
 }
 
+.pp__rainbow {
+  &:before {
+    content: "";
+    background-image: url(../images/rainbowpp.png);
+    background-size: 1024px 256px;
+    background-repeat: repeat;
+    background-position: 50% 50%;
+    z-index: -1;
+    opacity: 0.5;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .pp__toast {
   padding: 16px;
   position: fixed;
@@ -286,10 +318,7 @@
  * Modifiers
 *******************************************************************************/
 .-ppwrap {
-  width: 640px;
-  max-width: 640px;
-
-  @media (max-width: 640px) {
-    width: 100%;
-  }
+  padding-left: 32px;
+  padding-right: 32px;
+  width: 100%;
 }

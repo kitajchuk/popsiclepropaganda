@@ -21,12 +21,16 @@ function withSocket(WrappedComponent) {
 
     let pollTimer = null;
 
+    webSocket.onopen = () => {
+      console.log('ws opened');
+    };
+
+    webSocket.onclose = () => {
+      console.log('ws closed');
+    };
+
     webSocket.onmessage = (message) => {
       const json = JSON.parse(message.data);
-
-      if (/connect/.test(json.event)) {
-        console.log('ws connected');
-      }
 
       if (json.event === 'error') {
         dispatch(toast(json));
@@ -34,28 +38,30 @@ function withSocket(WrappedComponent) {
         return;
       }
 
-      if (json.network && json.network.sync_progress.status !== 'ready' && !pollTimer) {
+      if (json.event === 'wallet_connected' && !pollTimer) {
         pollTimer = setInterval(() => {
           if (json.network && json.network.sync_progress.status === 'ready') {
+            console.log('clear poll timer...');
             clearInterval(pollTimer);
+            pollTimer = null;
           } else {
-            console.log('polling network for readyness...');
-            webSocket.send(JSON.stringify({ event: 'wallet_network' }));
+            if (pollTimer) {
+              console.log('polling network for readyness...');
+              webSocket.send(JSON.stringify({ event: 'wallet_network' }));
+            } else {
+              console.log('polled network is ready...');
+            }
           }
         }, 1000);
       }
 
+      if (json.network && json.network.sync_progress.status === 'ready' && pollTimer) {
+        console.log('clear poll timer...');
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+
       dispatch(update(json));
-    };
-
-    webSocket.onopen = () => {
-      console.log('ws opened');
-
-      webSocket.send(JSON.stringify({ event: 'wallet_network' }));
-    };
-
-    webSocket.onclose = () => {
-      console.log('ws closed');
     };
 
     const sock = {
