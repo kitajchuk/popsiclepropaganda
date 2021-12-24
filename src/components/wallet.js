@@ -6,6 +6,7 @@ import {
   Route,
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { ExternalLink, Upload, Download } from 'react-feather';
 import { selectWallets, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
 import NotReady from './notready';
@@ -164,7 +165,50 @@ export default function Wallet({sock}) {
           </div>
         </Route>
         <Route exact path={`/wallets/${wallet.id}/transactions`}>
-          transactions
+          <table className="pp__table">
+              <thead>
+                <th></th>
+                <th>assets</th>
+                <th>txhash</th>
+              </thead>
+              <tbody>
+              {wallet.transactions.map((tx) => {
+                console.log(tx);
+                const verb = tx.direction === 'outgoing' ? 'sent' : 'received';
+                const assets = {
+                  outgoing: [],
+                  incoming: [],
+                };
+                tx.inputs.forEach((ip) => {
+                  if (ip.assets) {
+                    assets.outgoing = assets.outgoing.concat(ip.assets);
+                  }
+                });
+                tx.outputs.forEach((op) => {
+                  if (op.assets) {
+                    assets.incoming = assets.incoming.concat(op.assets);
+                  }
+                });
+                return (
+                  <tr key={tx.id}>
+                    <td>
+                      {tx.direction === 'outgoing' ? <Upload className="outgoing" /> : <Download className="incoming" />}
+                    </td>
+                    <td>
+                      <div>{tx.amount.quantity / 1e6} ADA {verb}</div>
+                      <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
+                    </td>
+                    <td>
+                      <a href={`https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
+                        <span>{tx.id}</span>
+                        <ExternalLink />
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+              </tbody>
+            </table>
         </Route>
         <Route exact path={`/wallets/${wallet.id}/tokens`}>
           <table className="pp__table">
@@ -176,11 +220,12 @@ export default function Wallet({sock}) {
             <tbody>
             {wallet.assets.available.map((asset) => {
               return (
-                <tr>
+                <tr key={asset.asset_name}>
                   <td>{asset.asset_name}</td>
                   <td>
-                    <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} target="_blank" title="Cardano Scan">
-                      {asset.policy_id}
+                    <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} rel="noreferrer" target="_blank" title="Cardano Scan">
+                      <span>{asset.policy_id}</span>
+                      <ExternalLink />
                     </a>
                   </td>
                   <td>{asset.quantity}</td>

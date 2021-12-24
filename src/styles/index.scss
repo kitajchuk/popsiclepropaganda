@@ -205,9 +205,28 @@
     border: 1px solid $grey;
   }
 
+  svg {
+    &.outgoing {
+      stroke: $pink;
+    }
+
+    &.incoming {
+      stroke: $green;
+    }
+  }
+
   a {
     color: $blue;
-    border-bottom: 1px solid $blue;
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: 8px;
+    }
+
+    span {
+      border-bottom: 1px solid $blue;
+    }
   }
 }
 
