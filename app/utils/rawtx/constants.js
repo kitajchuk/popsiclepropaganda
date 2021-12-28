@@ -1,5 +1,8 @@
 const path = require('path');
 
+// Network either "mainnet" or "testnet"
+const { NETWORK } = process.env;
+
 // For handling shelljs stdout to console
 const SHELL_OPTS = { silent: true };
 const SHELL_OUT = { silent: false };
@@ -23,6 +26,7 @@ module.exports = {
   TMP,
   ROOT,
   PRIV,
+  NETWORK,
   MIN_ADA,
   BURN_FEE,
   SHELL_OUT,

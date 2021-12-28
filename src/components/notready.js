@@ -1,4 +1,4 @@
-export default function NotReady({network}) {
+export default function NotReady({ network }) {
   return (
     <section className="pp__modal pp__rainbow">
       <div className="pp__modal__wrap">

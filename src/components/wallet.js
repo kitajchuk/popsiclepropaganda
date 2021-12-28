@@ -11,7 +11,7 @@ import { selectWallets, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
 import NotReady from './notready';
 
-export default function Wallet({sock}) {
+export default function Wallet({ sock }) {
   const params = useParams();
   const history = useHistory();
   const wallets = useSelector(selectWallets);
@@ -34,6 +34,44 @@ export default function Wallet({sock}) {
     }
   
   }, [wallet, name, setName]);
+
+  const updateHandler = () => {
+    let data = { id: wallet.id };
+    let msg;
+    const isName = name.length;
+    const isPassphrase = newPassphrase.length && oldPassphrase.length;
+
+    if (isName) {
+      data = {
+        ...data,
+        name,
+      };
+    }
+
+    if (isPassphrase) {
+      if (newPassphrase.length >= 10 && newPassphrase !== oldPassphrase) {
+        data = {
+          ...data,
+          oldPassphrase,
+          newPassphrase,
+        };
+      }
+    }
+
+    if ((data.name && data.name !== wallet.name) || (data.oldPassphrase && data.newPassphrase)) {
+      sock.send('wallet_update', data);
+    } else {
+      if (data.name === wallet.name && !isPassphrase) msg = 'The wallet name has not been changed';
+      if (isPassphrase && newPassphrase.length < 10) msg = 'The passphrase must be at least 10 characters';
+      if (isPassphrase && newPassphrase === oldPassphrase) msg = 'The new passphrase must be different than the current passphrase';
+      sock.toast({ error: { message: msg } });
+    }
+  };
+
+  const confirmDeleteHandler = () => {
+    sock.send('wallet_destroy', { id: wallet.id });
+    history.push('/wallets');
+  };
 
   return !ready ? (
     <NotReady network={network} />
@@ -92,32 +130,7 @@ export default function Wallet({sock}) {
               onChange={(e) => setNewPassphrase(e.target.value)}
               value={newPassphrase}
             />
-            <button className="confirm" onClick={() => {
-              let data = { id: wallet.id };
-              const isName = name.length;
-              const isPassphrase = newPassphrase.length && oldPassphrase.length;
-
-              if (isName) {
-                data = {
-                  ...data,
-                  name,
-                };
-              }
-
-              if (isPassphrase) {
-                if (newPassphrase.length >= 10 && newPassphrase !== oldPassphrase) {
-                  data = {
-                    ...data,
-                    oldPassphrase,
-                    newPassphrase,
-                  };
-                }
-              }
-
-              if (data.name || (data.oldPassphrase && data.newPassphrase)) {
-                sock.send('wallet_update', data);
-              }
-            }}>
+            <button className="confirm" onClick={updateHandler}>
               update name/passphrase
             </button>
             <button className="delete" onClick={() => setIsModal(!isModal)}>
@@ -127,10 +140,7 @@ export default function Wallet({sock}) {
           {isModal && (
             <Modal
               abortHandler={() => setIsModal(false)}
-              confirmHandler={() => {
-                sock.send('wallet_destroy', { id: wallet.id });
-                history.push('/');
-              }}
+              confirmHandler={confirmDeleteHandler}
             />
           )}
         </Route>
@@ -167,71 +177,75 @@ export default function Wallet({sock}) {
         <Route exact path={`/wallets/${wallet.id}/transactions`}>
           <table className="pp__table">
               <thead>
-                <th></th>
-                <th>assets</th>
-                <th>txhash</th>
+                <tr>
+                  <th>&nbsp;</th>
+                  <th>assets</th>
+                  <th>txhash</th>
+                </tr>
               </thead>
               <tbody>
-              {wallet.transactions.map((tx) => {
-                console.log(tx);
-                const verb = tx.direction === 'outgoing' ? 'sent' : 'received';
-                const assets = {
-                  outgoing: [],
-                  incoming: [],
-                };
-                tx.inputs.forEach((ip) => {
-                  if (ip.assets) {
-                    assets.outgoing = assets.outgoing.concat(ip.assets);
-                  }
-                });
-                tx.outputs.forEach((op) => {
-                  if (op.assets) {
-                    assets.incoming = assets.incoming.concat(op.assets);
-                  }
-                });
-                return (
-                  <tr key={tx.id}>
-                    <td>
-                      {tx.direction === 'outgoing' ? <Upload className="outgoing" /> : <Download className="incoming" />}
-                    </td>
-                    <td>
-                      <div>{tx.amount.quantity / 1e6} ADA {verb}</div>
-                      <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
-                    </td>
-                    <td>
-                      <a href={`https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
-                        <span>{tx.id}</span>
-                        <ExternalLink />
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
+                {wallet.transactions.map((tx) => {
+                  // console.log(tx);
+                  const verb = tx.direction === 'outgoing' ? 'sent' : 'received';
+                  const assets = {
+                    outgoing: [],
+                    incoming: [],
+                  };
+                  tx.inputs.forEach((ip) => {
+                    if (ip.assets) {
+                      assets.outgoing = assets.outgoing.concat(ip.assets);
+                    }
+                  });
+                  tx.outputs.forEach((op) => {
+                    if (op.assets) {
+                      assets.incoming = assets.incoming.concat(op.assets);
+                    }
+                  });
+                  return (
+                    <tr key={tx.id}>
+                      <td>
+                        {tx.direction === 'outgoing' ? <Upload className="outgoing" /> : <Download className="incoming" />}
+                      </td>
+                      <td>
+                        <div>{tx.amount.quantity / 1e6} ADA {verb}</div>
+                        <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
+                      </td>
+                      <td>
+                        <a href={`https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
+                          <span>{tx.id}</span>
+                          <ExternalLink />
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
         </Route>
         <Route exact path={`/wallets/${wallet.id}/tokens`}>
           <table className="pp__table">
             <thead>
-              <th>name</th>
-              <th>policy</th>
-              <th>quantity</th>
+              <tr>
+                <th>name</th>
+                <th>policy</th>
+                <th>quantity</th>
+              </tr>
             </thead>
             <tbody>
-            {wallet.assets.available.map((asset) => {
-              return (
-                <tr key={asset.asset_name}>
-                  <td>{asset.asset_name}</td>
-                  <td>
-                    <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} rel="noreferrer" target="_blank" title="Cardano Scan">
-                      <span>{asset.policy_id}</span>
-                      <ExternalLink />
-                    </a>
-                  </td>
-                  <td>{asset.quantity}</td>
-                </tr>
-              );
-            })}
+              {wallet.assets.available.map((asset) => {
+                return (
+                  <tr key={asset.asset_name}>
+                    <td>{asset.asset_name}</td>
+                    <td>
+                      <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} rel="noreferrer" target="_blank" title="Cardano Scan">
+                        <span>{asset.policy_id}</span>
+                        <ExternalLink />
+                      </a>
+                    </td>
+                    <td>{asset.quantity}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </Route>

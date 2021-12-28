@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectUtxo, selectNetwork, selectReady } from '../store/selectors';
 import NotReady from './notready';
 
-export default function Faucet({sock}) {
+export default function Faucet({ sock }) {
   const utxo = useSelector(selectUtxo);
   const network = useSelector(selectNetwork);
   const ready = useSelector(selectReady);

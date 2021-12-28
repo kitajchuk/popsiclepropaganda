@@ -316,20 +316,25 @@
 .pp__toast {
   padding: 16px;
   position: fixed;
-  left: 16px;
+  left: 80px;
   right: 16px;
   top: 16px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: $red;
+  background-color: $black;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   z-index: 1110010012;
   border-radius: 6px;
-  border: 1px solid $red;
 
-  span {
-    color: $white;
+  &.error {
+    color: $red;
+    border: 2px solid $red;
+  }
+
+  &.success {
+    color: $green;
+    border: 2px solid $green;
   }
 }
 

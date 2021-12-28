@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
+  message: null,
   network: null,
   wallets: [],
   query: {},
-  error: null,
   seed: null,
   utxo: null,
 };
@@ -21,17 +21,17 @@ export const slice = createSlice({
       state.seed = seed || state.seed;
       state.utxo = utxo || state.utxo;
       if (query) state.query[query.address] = query;
-      state.error = null;
     },
+
     toast(state, action) {
-      const { error, seed } = action.payload;
-      if (seed) {
-        state.seed = seed;
-      }
-      state.error = error;
+      const { error, success, seed } = action.payload;
+      if (seed) state.seed = seed;
+      if (error) state.message = { error: { ...error } };
+      if (success) state.message = { success };
     },
+
     reset(state) {
-      state.error = null;
+      state.message = null;
     },
   },
   extraReducers: {},

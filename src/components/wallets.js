@@ -6,7 +6,7 @@ import { selectWallets, selectSeed, selectNetwork, selectReady } from '../store/
 import Modal from './modal';
 import NotReady from './notready';
 
-export default function Wallets({sock}) {
+export default function Wallets({ sock }) {
   const seed = useSelector(selectSeed);
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
@@ -31,6 +31,14 @@ export default function Wallets({sock}) {
     setPhase('initial');
   };
 
+  const challengeHandler = () => {
+    if (passphrase.length >= 10 && name !== '') {
+      setPhase('recovery');
+    } else {
+      sock.toast({ error: { message: 'Passphrase must be 10 characters or more and name cannot be empty.' } });
+    }
+  };
+
   const confirmHandler = () => {
     if (passphrase.length >= 10 && name !== '') {
       if (mode === 'create') {
@@ -39,15 +47,22 @@ export default function Wallets({sock}) {
           name,
           passphrase,
         });
+        resetAll();
       }
       if (mode === 'recover') {
-        sock.send('wallet_recover', {
-          name,
-          seed: recovery,
-          passphrase,
-        });
+        if (recovery !== '') {
+          sock.send('wallet_recover', {
+            name,
+            seed: recovery,
+            passphrase,
+          });
+          resetAll();
+        } else {
+          sock.toast({ error: { message: 'You must enter your recovery phrase in order to restore a wallet.' } });
+        }
       }
-      resetAll();
+    } else {
+      sock.toast({ error: { message: 'Passphrase must be 10 characters or more and name cannot be empty.' } });
     }
   };
 
@@ -70,7 +85,11 @@ export default function Wallets({sock}) {
             setWords([]);
           }
 
-          sock.toast('You pressed the words in the wrong order, try again.');
+          sock.toast({
+            error: {
+              message: 'You pressed the words in the wrong order, try again.',
+            },
+          });
         }
       }
     }
@@ -138,11 +157,7 @@ export default function Wallets({sock}) {
                   {phase === 'initial' && (
                     <>
                       <div>save this recovery phrase in case you ever need to recover your wallet. <br />try not to lose it...</div>
-                      <button onClick={() => {
-                        if (passphrase.length >= 10 && name !== '') {
-                          setPhase('recovery');
-                        }
-                      }} className="confirm">
+                      <button onClick={challengeHandler} className="confirm">
                         challenge phrase
                       </button>
                     </>

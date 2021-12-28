@@ -51,11 +51,16 @@ const {
   TMP,
   PRIV,
   ROOT,
+  NETWORK,
   MIN_ADA,
   BURN_FEE,
   SHELL_OUT,
   SHELL_OPTS,
 } = require('./constants');
+
+const FLAGS = (NETWORK === 'mainnet')
+  ? '--mainnet'
+  : '--testnet-magic 1097911063';
 
 /**
  * Read contents of local file for cardano-cli
@@ -103,8 +108,8 @@ function getAddressUtxo(addy) {
 
   const command = shell.exec(`
     cardano-cli query utxo \
-      --address ${address} \
-      --testnet-magic 1097911063
+      ${FLAGS} \
+      --address ${address}
   `, SHELL_OPTS);
 
   // Parse from standard out -- 3 columns |TxHash|TxIx|Amount|
@@ -291,7 +296,7 @@ function mintNFT(receiver, tokenname, metadata) {
 
         command = shell.exec(`
           cardano-cli transaction build \
-            --testnet-magic 1097911063 \
+            ${FLAGS} \
             --alonzo-era \
             --tx-in ${txhash}#${txix} \
             --tx-out ${receiver}+${output}+"${tokenamount} ${policyID}.${tokenname}" \
@@ -315,17 +320,17 @@ function mintNFT(receiver, tokenname, metadata) {
     if (command.code === 0 && /Estimated transaction fee/.test(command.stdout)) {
       command = shell.exec(`
         cardano-cli transaction sign  \
+          ${FLAGS} \
           --signing-key-file ${path.join(PRIV, 'payment.skey')}  \
           --signing-key-file ${path.join(nftPrivDir, 'policy.skey')}  \
-          --testnet-magic 1097911063 \
           --tx-body-file ${path.join(TMP, 'matx.raw')} \
           --out-file ${path.join(TMP, 'matx.signed')}
       `, SHELL_OUT);
 
       command = shell.exec(`
         cardano-cli transaction submit \
-          --tx-file ${path.join(TMP, 'matx.signed')} \
-          --testnet-magic 1097911063
+          ${FLAGS} \
+          --tx-file ${path.join(TMP, 'matx.signed')}
       `, SHELL_OUT);
 
       resolveWithNewUtxo(txhash, resolve);
@@ -431,9 +436,9 @@ function mintToken(token, amount) {
     // Sign it
     command = shell.exec(`
       cardano-cli transaction sign  \
+        ${FLAGS} \
         --signing-key-file ${path.join(PRIV, 'payment.skey')}  \
         --signing-key-file ${path.join(tknPrivDir, 'policy.skey')}  \
-        --testnet-magic 1097911063 \
         --tx-body-file ${path.join(TMP, 'matx.raw')}  \
         --out-file ${path.join(TMP, 'matx.signed')}
     `, SHELL_OPTS);
@@ -441,8 +446,8 @@ function mintToken(token, amount) {
     // Submit it
     command = shell.exec(`
       cardano-cli transaction submit \
-        --tx-file ${path.join(TMP, 'matx.signed')} \
-        --testnet-magic 1097911063
+        ${FLAGS} \
+        --tx-file ${path.join(TMP, 'matx.signed')}
     `, SHELL_OPTS);
 
     resolveWithNewUtxo(txhash, resolve);
@@ -500,8 +505,8 @@ function sendCoin(amount, receiver) {
     // Sign it
     command = shell.exec(`
       cardano-cli transaction sign \
+      ${FLAGS} \
         --signing-key-file ${path.join(PRIV, 'payment.skey')} \
-        --testnet-magic 1097911063 \
         --tx-body-file ${path.join(TMP, 'rec_matx.raw')} \
         --out-file ${path.join(TMP, 'rec_matx.signed')}
     `, SHELL_OPTS);
@@ -509,8 +514,8 @@ function sendCoin(amount, receiver) {
     // Send it
     command = shell.exec(`
       cardano-cli transaction submit \
-        --tx-file ${path.join(TMP, 'rec_matx.signed')} \
-        --testnet-magic 1097911063
+        ${FLAGS} \
+        --tx-file ${path.join(TMP, 'rec_matx.signed')}
     `, SHELL_OPTS);
 
     resolveWithNewUtxo(txhash, resolve);
@@ -578,17 +583,17 @@ function sendToken(token, amount, receiver) {
     // Sign it
     command = shell.exec(`
       cardano-cli transaction sign  \
+        ${FLAGS} \
         --signing-key-file ${path.join(PRIV, 'payment.skey')}  \
         --tx-body-file ${path.join(TMP, 'rec_matx.raw')}  \
-        --out-file ${path.join(TMP, 'rec_matx.signed')} \
-        --testnet-magic 1097911063
+        --out-file ${path.join(TMP, 'rec_matx.signed')}
     `, SHELL_OPTS);
   
     // Send it
     command = shell.exec(`
       cardano-cli transaction submit \
-        --tx-file ${path.join(TMP, 'rec_matx.signed')} \
-        --testnet-magic 1097911063
+        ${FLAGS} \
+        --tx-file ${path.join(TMP, 'rec_matx.signed')}
     `, SHELL_OPTS);
 
     resolveWithNewUtxo(txhash, resolve);
@@ -656,18 +661,18 @@ function burnToken(token, amount) {
     // Sign it
     command = shell.exec(`
       cardano-cli transaction sign  \
+        ${FLAGS} \
         --signing-key-file ${path.join(PRIV, 'payment.skey')}  \
         --signing-key-file ${path.join(PRIV, 'policy/policy.skey')}  \
         --tx-body-file ${path.join(TMP, 'burning.raw')}  \
-        --out-file ${path.join(TMP, 'burning.signed')} \
-        --testnet-magic 1097911063
+        --out-file ${path.join(TMP, 'burning.signed')}
     `, SHELL_OPTS);
   
     // Send it
     command = shell.exec(`
       cardano-cli transaction submit \
-        --tx-file ${path.join(TMP, 'burning.signed')} \
-        --testnet-magic 1097911063
+        ${FLAGS} \
+        --tx-file ${path.join(TMP, 'burning.signed')}
     `, SHELL_OPTS);
 
     resolveWithNewUtxo(txhash, resolve);
@@ -685,11 +690,11 @@ function calcMinFee(bodyFile) {
 
   const command = shell.exec(`
     cardano-cli transaction calculate-min-fee \
+      ${FLAGS} \
       --tx-body-file ${path.join(TMP, bodyFile)} \
       --tx-in-count 1 \
       --tx-out-count 2 \
       --witness-count 1 \
-      --testnet-magic 1097911063 \
       --protocol-params-file ${path.join(PRIV, 'protocol.json')} | cut -d " " -f1
   `, SHELL_OPTS);
 
@@ -704,13 +709,13 @@ function queryTip() {
   return new Promise((resolve) => {
     let command = shell.exec(`
       cardano-cli query tip \
-        --testnet-magic 1097911063
+        ${FLAGS}
     `, SHELL_OPTS);
 
     while (command.code === 1) {
       command = shell.exec(`
         cardano-cli query tip \
-          --testnet-magic 1097911063
+          ${FLAGS}
       `, SHELL_OPTS);
 
       if (Date.now() % 2 === 1) {
@@ -735,8 +740,8 @@ function queryAddy(addy) {
 
   shell.exec(`
     cardano-cli query utxo \
-      --address ${address} \
-      --testnet-magic 1097911063
+      ${FLAGS} \
+      --address ${address}
   `, SHELL_OUT);
 }
 
@@ -747,7 +752,8 @@ function queryAddy(addy) {
  */
 function getFutureSlot(slots = 10000) {
   const command = shell.exec(`
-    cardano-cli query tip --testnet-magic 1097911063
+    cardano-cli query tip \
+      ${FLAGS}
   `, SHELL_OPTS);
   const json = JSON.parse(command.stdout);
 
@@ -760,7 +766,7 @@ function getFutureSlot(slots = 10000) {
 function genProtocol() {
   shell.exec(`
     cardano-cli query protocol-parameters \
-      --testnet-magic 1097911063 \
+      ${FLAGS} \
       --out-file ${path.join(PRIV, 'protocol.json')}
   `, SHELL_OPTS);
 }
@@ -781,9 +787,9 @@ function genPaymentAddr() {
 
   shell.exec(`
     cardano-cli address build \
+      ${FLAGS} \
       --payment-verification-key-file ${path.join(PRIV, 'payment.vkey')} \
-      --out-file ${path.join(PRIV, 'payment.addr')} \
-      --testnet-magic 1097911063
+      --out-file ${path.join(PRIV, 'payment.addr')}
   `, SHELL_OPTS);
 }
 
