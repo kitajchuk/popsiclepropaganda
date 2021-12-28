@@ -1,7 +1,7 @@
 {
   "name": "popsiclepropaganda-backend",
   "version": "0.1.0",
-  "description": "Learning Cardano Blockchain Development",
+  "description": "Exploring the Cardano Blockchain",
   "private": true,
   "dependencies": {
     "cardano-wallet-js": "^1.2.3",

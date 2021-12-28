@@ -1,7 +1,7 @@
 {
   "name": "popsiclepropaganda-frontend",
   "version": "0.1.0",
-  "description": "Learning Cardano Blockchain Development",
+  "description": "Exploring the Cardano Blockchain",
   "private": true,
   "scripts": {
     "preinstall": "cd app && yarn",

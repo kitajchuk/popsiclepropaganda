@@ -1,7 +1,7 @@
 popsiclepropaganda
 ==================
 
-> Learning Cardano Blockchain Development
+> Exploring the Cardano Blockchain
 
 <img src="./public/rainbowpp.png" width="100%" />
 
