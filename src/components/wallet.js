@@ -10,6 +10,7 @@ import { ExternalLink, Upload, Download } from 'react-feather';
 import { selectWallets, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
 import NotReady from './notready';
+import { SCANNER_URL, EXPLORER_URL } from '../constants';
 
 export default function Wallet({ sock }) {
   const params = useParams();
@@ -211,7 +212,7 @@ export default function Wallet({ sock }) {
                         <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
                       </td>
                       <td>
-                        <a href={`https://explorer.cardano-testnet.iohkdev.io/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
+                        <a href={`${EXPLORER_URL}/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
                           <span>{tx.id}</span>
                           <ExternalLink />
                         </a>
@@ -237,7 +238,7 @@ export default function Wallet({ sock }) {
                   <tr key={asset.asset_name}>
                     <td>{asset.asset_name}</td>
                     <td>
-                      <a href={`https://testnet.cardanoscan.io/token/${asset.policy_id}.${asset.asset_name}`} rel="noreferrer" target="_blank" title="Cardano Scan">
+                      <a href={`${SCANNER_URL}/token/${asset.policy_id}.${asset.asset_name}`} rel="noreferrer" target="_blank" title="Cardano Scan">
                         <span>{asset.policy_id}</span>
                         <ExternalLink />
                       </a>

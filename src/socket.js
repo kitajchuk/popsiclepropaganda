@@ -1,56 +1,65 @@
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { update, toast, reset } from './store/reducers';
+import { PORT_LOCAL } from './constants';
 
 export function withSocket(WrappedComponent) {
   return ({...props}) => {
     const dispatch = useDispatch();
-    const webSocket = new WebSocket('ws://localhost:8888', 'echo-protocol');
     const toastTime = 5000;
+    const pollTime = 3000;
 
-    let pollTimer = null;
-    let toastTimer = null;
+    let webSocket = useRef();
+    let pollTimer = useRef();
+    let toastTimer = useRef();
 
-    webSocket.onopen = () => {
-      console.log('ws opened');
-    };
+    useEffect(() => {
+      if (!webSocket.current) {
+        webSocket.current = new WebSocket(`ws://localhost:${PORT_LOCAL}`);
 
-    webSocket.onclose = () => {
-      console.log('ws closed');
-    };
-
-    webSocket.onmessage = (message) => {
-      const json = JSON.parse(message.data);
-
-      if (json.event === 'error' || json.event === 'success') {
-        clearTimeout(toastTimer);
-        dispatch(toast(json));
-        toastTimer = setTimeout(() => dispatch(reset()), toastTime);
-        return;
-      }
-
-      if (json.event === 'wallet_connected' && !pollTimer) {
-        pollTimer = setInterval(() => {
-          if (json.network && json.network.sync_progress.status === 'ready') {
-            console.log('clear poll timer...');
-            clearInterval(pollTimer);
-          } else {
-            if (pollTimer) {
-              console.log('polling network for readyness...');
-              webSocket.send(JSON.stringify({ event: 'wallet_network' }));
-            } else {
-              console.log('polled network is ready...');
-            }
+        webSocket.current.onopen = () => {
+          console.log('ws opened');
+        };
+    
+        webSocket.current.onclose = () => {
+          console.log('ws closed');
+        };
+    
+        webSocket.current.onmessage = (message) => {
+          const json = JSON.parse(message.data);
+    
+          if (json.event === 'error' || json.event === 'success') {
+            clearTimeout(toastTimer.current);
+            dispatch(toast(json));
+            toastTimer.current = setTimeout(() => dispatch(reset()), toastTime);
+            return;
           }
-        }, 1000);
+    
+          if (json.event === 'wallet_connected' && !pollTimer.current) {
+            pollTimer.current = setInterval(() => {
+              if (json.network && json.network.sync_progress.status === 'ready') {
+                console.log('clear poll timer...');
+                clearInterval(pollTimer.current);
+              } else {
+                if (pollTimer.current) {
+                  console.log('polling network for readyness...');
+                  webSocket.current.send(JSON.stringify({ event: 'wallet_network' }));
+                } else {
+                  console.log('polled network is ready...');
+                }
+              }
+            }, pollTime);
+          }
+    
+          if (json.network && json.network.sync_progress.status === 'ready' && pollTimer.current) {
+            console.log('clear poll timer...');
+            clearInterval(pollTimer.current);
+          }
+    
+          dispatch(update(json));
+        };
       }
-
-      if (json.network && json.network.sync_progress.status === 'ready' && pollTimer) {
-        console.log('clear poll timer...');
-        clearInterval(pollTimer);
-      }
-
-      dispatch(update(json));
-    };
+    }, [dispatch]);
 
     const sock = {
       /**
@@ -59,15 +68,15 @@ export function withSocket(WrappedComponent) {
        * @param {object} data The data to send to the WebSocketServer
        */
       send: (event, data) => {
-        if (webSocket.readyState !== 1) {
+        if (webSocket.current && webSocket.current.readyState !== 1) {
           let timer = setInterval(() => {
-            if (webSocket.readyState === 1) {
+            if (webSocket.current.readyState === 1) {
               clearInterval(timer);
-              webSocket.send(JSON.stringify({ event, data }));
+              webSocket.current.send(JSON.stringify({ event, data }));
             }
           }, 100);
-        } else {
-          webSocket.send(JSON.stringify({ event, data }));
+        } else if (webSocket.current && webSocket.current.readyState === 1) {
+          webSocket.current.send(JSON.stringify({ event, data }));
         }
       },
 
@@ -78,7 +87,7 @@ export function withSocket(WrappedComponent) {
       toast: (message) => {
         clearTimeout(toastTimer);
         dispatch(toast(message));
-        toastTimer = setTimeout(() => dispatch(reset()), toastTime);
+        toastTimer.current = setTimeout(() => dispatch(reset()), toastTime);
       }
     };
 

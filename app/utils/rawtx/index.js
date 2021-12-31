@@ -50,13 +50,12 @@ const shell = require('shelljs');
 const {
   TMP,
   PRIV,
-  ROOT,
   NETWORK,
   MIN_ADA,
   BURN_FEE,
   SHELL_OUT,
   SHELL_OPTS,
-} = require('./constants');
+} = require('../../constants');
 
 const FLAGS = (NETWORK === 'mainnet')
   ? '--mainnet'
@@ -801,7 +800,6 @@ function cleanTransients() {
 }
 
 module.exports = {
-  // Methods
   mintNFT,
   queryTip,
   sendCoin,
@@ -820,13 +818,4 @@ module.exports = {
   genPaymentAddr,
   cleanTransients,
   resolveWithNewUtxo,
-
-  // Constants
-  TMP,
-  ROOT,
-  PRIV,
-  MIN_ADA,
-  BURN_FEE,
-  SHELL_OUT,
-  SHELL_OPTS,
 };

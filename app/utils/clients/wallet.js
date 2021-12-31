@@ -85,7 +85,7 @@ function withWallet(ws) {
           Seed.toMnemonicList(data.seed),
           data.passphrase
         );
-        ws.send(getSuccessFE(`Your Shelley wallet has been ${event === 'wallet_create' ? 'created' : 'restored'}.`));
+        ws.send(getSuccessFE(`Your wallet has been ${event === 'wallet_create' ? 'created' : 'restored'}.`));
       } catch (error) {
         ws.send(getErrorFE(error));
         return;
@@ -101,7 +101,7 @@ function withWallet(ws) {
 
       if (data.name && (data.name !== wallet.name)) {
         wallet = await wallet.rename(data.name);
-        ws.send(getSuccessFE('Your Shelley wallet has been renamed.'));
+        ws.send(getSuccessFE('Your wallet has been renamed.'));
       }
       
       if ((data.newPassphrase && data.oldPassphrase) && (data.newPassphrase !== data.oldPassphrase)) {
@@ -114,7 +114,7 @@ function withWallet(ws) {
           ws.send(getErrorFE(error));
           return;
         }
-        ws.send(getSuccessFE('Your Shelley wallet passphrase has been updated.'));
+        ws.send(getSuccessFE('Your wallet passphrase has been updated.'));
       }
 
       let wallets = await walletServer.wallets();
@@ -132,7 +132,7 @@ function withWallet(ws) {
         return;
       }
 
-      ws.send(getSuccessFE('Your Shelley wallet has been destroyed.'));
+      ws.send(getSuccessFE('Your wallet has been deleted. You can recover it with your recovery phrase.'));
 
       let wallets = await walletServer.wallets();
 

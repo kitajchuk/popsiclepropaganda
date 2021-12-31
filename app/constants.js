@@ -1,5 +1,11 @@
+const path = require('path');
+
+// Local ports front and back
 const PORT_LOCAL = 8888;
 const PORT_NETWORK = 8090;
+
+// Network can be either "mainnet" or "testnet"
+const { NETWORK } = process.env;
 
 // For handling shelljs stdout to console
 const SHELL_OPTS = { silent: true };
@@ -7,6 +13,9 @@ const SHELL_OUT = { silent: false };
 
 // Always execute your node-js script from the directory your files are
 const ROOT = process.cwd();
+const PRIV = path.join(ROOT, 'priv');
+const TMP = path.join(ROOT, 'tmp');
+
 
 // There's some REAL maths for this stuff:
 // https://docs.cardano.org/native-tokens/minimum-ada-value-requirement
@@ -22,12 +31,15 @@ const BURN_FEE = 300000;
 const TESTNET_RETURN_ADDR = 'addr_test1qqr585tvlc7ylnqvz8pyqwauzrdu0mxag3m7q56grgmgu7sxu2hyfhlkwuxupa9d5085eunq2qywy7hvmvej456flknswgndm3';
 
 module.exports = {
-  PORT_LOCAL,
-  PORT_NETWORK,
-  SHELL_OUT,
-  SHELL_OPTS,
+  TMP,
   ROOT,
+  PRIV,
+  NETWORK,
   MIN_ADA,
   BURN_FEE,
+  SHELL_OUT,
+  SHELL_OPTS,
+  PORT_LOCAL,
+  PORT_NETWORK,
   TESTNET_RETURN_ADDR,
 };

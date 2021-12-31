@@ -4,6 +4,8 @@ const path = require('path');
 const {
   TMP,
   PRIV,
+} = require('../../constants');
+const {
   getAddress,
   genPaymentAddr,
   getAddressUtxo,

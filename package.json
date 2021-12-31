@@ -8,10 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:app": "env-cmd --file .env docker-compose --project-name cardano up",
     "stop:app": "env-cmd --file .env docker-compose --project-name cardano down",
-    "start:src": "react-scripts start",
-    "build:src": "react-scripts build",
-    "test:src": "react-scripts test",
-    "eject:src": "react-scripts eject"
+    "start:src": "env-cmd --file .env react-scripts start",
+    "build:src": "env-cmd --file .env react-scripts build",
+    "test:src": "env-cmd --file .env react-scripts test",
+    "eject:src": "env-cmd --file .env react-scripts eject"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.0",
