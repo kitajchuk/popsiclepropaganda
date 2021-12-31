@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-feather';
@@ -18,10 +18,6 @@ export default function Wallets({ sock }) {
   const [mode, setMode] = useState('');
   const [phase, setPhase] = useState('initial');
   const [words, setWords] = useState([]);
-
-  useEffect(() => {
-    sock.send('wallet_list');
-  }, [sock]);
 
   const resetAll = () => {
     setIsModal(false);

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUtxo, selectNetwork, selectReady } from '../store/selectors';
 import NotReady from './notready';
@@ -10,10 +9,6 @@ export default function Faucet({ sock }) {
   const coin = utxo ? utxo.transactions.reduce((prev, curr) => {
     return prev + curr.funds;
   }, 0) : 0;
-
-  useEffect(() => {
-    sock.send('faucet_utxo');
-  }, [sock]);
 
   return !ready ? (
     <NotReady network={network} />

@@ -25,10 +25,6 @@ export default function Wallet({ sock }) {
   const [isModal, setIsModal] = useState(false);
 
   useEffect(() => {
-    sock.send('wallet_list');
-  }, [sock]);
-
-  useEffect(() => {
     if (wallet && !name) {
       console.log('pp:', 'setName', wallet.name);
       setName(wallet.name);

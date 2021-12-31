@@ -5,7 +5,7 @@ export default function NotReady({ network }) {
         {/* https://input-output-hk.github.io/cardano-wallet/api/edge/#tag/Network */}
         {network && network.sync_progress.status !== 'not_responding'
           ? `network sync: ${network.sync_progress.progress.quantity}%`
-          : 'network: offline'}
+          : 'connecting to network'}
       </div>
     </section>
   );
