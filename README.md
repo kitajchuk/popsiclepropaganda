@@ -15,16 +15,15 @@ It's worth noting that the Cardano "Dev Stack" provided by the core of this proj
 
 #### Install
 
-```shell
-# deps
-yarn install
+To install the package dependencies and local `.env` config:
 
-# for testnet
-echo "NETWORK=testnet" > .env
+- `yarn`
 
-# for mainnet
-echo "NETWORK=mainnet" > .env
-```
+The default `.env` environment variables are as follows but have multiple values:
+
+- `NETWORK`: Default is `testnet`. Can be `mainnet`.
+- `BROWSER`: Default is `none` to disable `cra` default browser.
+- `NODE_ENV`: Default is `development`. Can be `production`.
 
 ## Backend commands
 
@@ -63,6 +62,15 @@ docker push kitajchuk/cardano-nodejs:1.30.1
 
 The frontend is currently a [create-react-app](https://create-react-app.dev) frontend loaded via [electron](https://github.com/electron/electron) so this can be desktop software. Currently it is not a very robust electron implementation, however many good concepts can be lifted from [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate) to make it better. The goal is to have minimal boilerplate overhead which is why we're not using a boilerplate like electron-react-boilerplate wholesale.
 
+To build and run the static frontend:
+
+```shell
+# Build the frontend static app at ./build
+yarn build:src
+
+# Start electron and load the static ./build
+yarn electron:dev
+```
 
 ## Bin commands
 
