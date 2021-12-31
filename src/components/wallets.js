@@ -98,7 +98,7 @@ export default function Wallets({ sock }) {
       {!!wallets.length && wallets.map((wallet) => {
         return (
           <div className="pp__wallet pp__bump" key={wallet.id}>
-            <NavLink to={`/wallets/${wallet.id}`} className="pp__wallet__link">
+            <NavLink to={`/wallet/${wallet.id}`} className="pp__wallet__link">
               <Link />
               {wallet.name}
             </NavLink>

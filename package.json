@@ -1,5 +1,5 @@
 {
-  "name": "popsiclepropaganda-frontend",
+  "name": "popsiclepropaganda",
   "version": "0.1.0",
   "description": "Exploring the Cardano Blockchain",
   "private": true,
@@ -8,18 +8,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:app": "env-cmd --file .env docker-compose --project-name cardano up",
     "stop:app": "env-cmd --file .env docker-compose --project-name cardano down",
-    "start:src": "env-cmd --file .env react-scripts start",
+    "start:src": "env-cmd --file .env concurrently \"react-scripts start\" \"electron .\"",
     "build:src": "env-cmd --file .env react-scripts build",
     "test:src": "env-cmd --file .env react-scripts test",
-    "eject:src": "env-cmd --file .env react-scripts eject"
+    "eject:src": "env-cmd --file .env react-scripts eject",
+    "electron:dev": "NODE_ENV=production electron ."
   },
+  "homepage": "./",
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "classnames": "^2.2.6",
-    "cra-preact": "^0.4.0",
     "css-loader": "^6.5.1",
     "env-cmd": "^10.1.0",
     "nanoid": "^3.1.30",
@@ -31,6 +32,10 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^6.5.1",
+    "electron": "^16.0.5"
   },
   "eslintConfig": {
     "extends": [
@@ -52,5 +57,6 @@
   },
   "jest": {
     "transformIgnorePatterns": []
-  }
+  },
+  "main": "electron/main.js"
 }

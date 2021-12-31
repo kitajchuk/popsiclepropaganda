@@ -20,6 +20,6 @@ yarn-error.log*
 .env*
 
 # popsiclepropaganda
-/dev/
+/.idea
 /app/tmp
 /app/priv

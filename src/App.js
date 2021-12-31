@@ -17,6 +17,19 @@ import Faucet from './components/faucet';
 function App({sock}) {
   const message = useSelector(selectMessage);
 
+  // For now this lets us run the static /build/ inside of electron
+  const indexPaths = [
+    '/',
+    '/*/index.html',
+  ];
+  const handleIndexActive = (match, location) => {
+    if (!match) return false;
+    if (location.pathname === '/') return true;
+    if (/\/index.html$/.test(location.pathname)) return true;
+    if (/\/wallet\//.test(location.pathname)) return true;
+    return false;
+  };
+
   return (
     <Router>
       <div className="pp">
@@ -26,12 +39,12 @@ function App({sock}) {
         <nav className="pp__navi">
           <ul>
             <li>
-              <NavLink to="/" exact activeClassName="active">
-                <img src="/assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
+              <NavLink to="/">
+                <img src="./assets/RainbowPopsicle.svg" alt="Rainbow_PP" />
               </NavLink>
             </li>
             <li>
-              <NavLink to="/wallets" activeClassName="active">
+              <NavLink to="/" activeClassName="active" isActive={handleIndexActive}>
                 <CreditCard />
               </NavLink>
             </li>
@@ -44,15 +57,12 @@ function App({sock}) {
         </nav>
         <header className="pp__mast">
           <Switch>
-            <Route exact path="/">
-              home
-            </Route>
-            <Route exact path="/wallets">
+            <Route exact path={indexPaths}>
               wallets
             </Route>
             <Route exact path={[
-              '/wallets/:id',
-              '/wallets/:id/:view',
+              '/wallet/:id',
+              '/wallet/:id/:view',
             ]}>
               wallet
             </Route>
@@ -63,15 +73,12 @@ function App({sock}) {
         </header>
         <main className="pp__main">
           <Switch>
-            <Route exact path="/">
-              <img src="/rainbowpp.png" alt="Rainbow_PP" />
-            </Route>
-            <Route exact path="/wallets">
+            <Route exact path={indexPaths}>
               <Wallets sock={sock} />
             </Route>
             <Route exact path={[
-              '/wallets/:id',
-              '/wallets/:id/:view',
+              '/wallet/:id',
+              '/wallet/:id/:view',
             ]}>
               <Wallet sock={sock} />
             </Route>
