@@ -64,7 +64,8 @@ pre {
   padding: 32px;
 }
 
-input,
+input[type="text"],
+input[type="password"],
 button,
 textarea {
   padding: 16px 32px;
@@ -87,15 +88,31 @@ textarea {
   }
 }
 
-input,
+input[type="text"],
+input[type="password"],
 textarea {
   background-color: #eee;
+}
+
+input[disabled] {
+  opacity: 0.5;
 }
 
 textarea {
   resize: none;
   min-height: 100px;
   padding: 16px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    display: inline-block;
+    padding: 0 0 0 4px;
+  }
 }
 
 button {

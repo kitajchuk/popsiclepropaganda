@@ -1,8 +1,10 @@
 // https://electron.guide/final-polish/renderer/#prevent-browserwindow-refreshes
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
+const isMac = (process.platform === 'darwin');
+const isProd = (process.env.NODE_ENV === 'production');
 
 function createWindow () {
   // Create the browser window.
@@ -17,14 +19,23 @@ function createWindow () {
   });
 
   // and load the index.html of the app.
-  if (process.env.NODE_ENV === 'production') {
+  if (isProd) {
+    // React app static
     mainWindow.loadFile('./build/index.html');
-  } else {
-    mainWindow.loadURL('http://localhost:3000'); // Create react app dev server
-  }
 
-  // Open the DevTools.
-  if (process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools();
+    // Disable menus
+    if (isMac) {
+      Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+    } else {
+      mainWindow.removeMenu();
+    }
+  } else {
+    // React app dev server
+    mainWindow.loadURL('http://localhost:3000');
+
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 // This method will be called when Electron has finished
@@ -44,7 +55,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (isMac) app.quit();
 });
 
 // In this file you can include the rest of your app's specific main process

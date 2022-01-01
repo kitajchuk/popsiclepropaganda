@@ -5,6 +5,7 @@ export const initialState = {
   network: null,
   wallets: [],
   query: {},
+  fees: null,
   seed: null,
   utxo: null,
 };
@@ -15,11 +16,12 @@ export const slice = createSlice({
   initialState,
   reducers: {
     update(state, action) {
-      const { wallets, utxo, seed, network, query } = action.payload;
+      const { wallets, utxo, seed, network, query, fees } = action.payload;
       state.network = network || state.network;
       state.wallets = wallets || state.wallets;
       state.seed = seed || state.seed;
       state.utxo = utxo || state.utxo;
+      state.fees = fees;
       if (query) state.query[query.address] = query;
     },
 
@@ -32,6 +34,7 @@ export const slice = createSlice({
 
     reset(state) {
       state.message = null;
+      state.fees = null;
     },
   },
   extraReducers: {},

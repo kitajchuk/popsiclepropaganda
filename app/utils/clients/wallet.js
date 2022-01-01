@@ -1,4 +1,4 @@
-const { Seed, WalletServer } = require('cardano-wallet-js');
+const { Seed, WalletServer, AddressWallet } = require('cardano-wallet-js');
 const { PORT_NETWORK } = require('../../constants');
 
 /**
@@ -9,9 +9,10 @@ const { PORT_NETWORK } = require('../../constants');
 const walletServer = WalletServer.init(`http://cardano-wallet:${PORT_NETWORK}/v2`);
 
 function withWallet(ws) {
-  const getResponseFE = async (event, wallets) => {
+  const getWalletsFE = async (event, wallets) => {
     return JSON.stringify({
       seed: Seed.generateRecoveryPhrase(),
+      fees: null,
       event,
       wallets: await Promise.all(wallets.map(async (wallet) => {
         return {
@@ -35,7 +36,7 @@ function withWallet(ws) {
   const getErrorFE = (error) => {
     return JSON.stringify({
       event: 'error',
-      error: error.response.data, // { message, code }
+      error: error.response.data, // { message, code } from axios Error response
       seed: Seed.generateRecoveryPhrase(),
     });
   };
@@ -43,7 +44,15 @@ function withWallet(ws) {
   const getSuccessFE = (message) => {
     return JSON.stringify({
       event: 'success',
-      success: { message },
+      success: { message }, // { message } replicate axios Error response
+      seed: Seed.generateRecoveryPhrase(),
+    });
+  };
+
+  const getFeesFE = (event, fees) => {
+    return JSON.stringify({
+      event,
+      fees,
       seed: Seed.generateRecoveryPhrase(),
     });
   };
@@ -73,7 +82,7 @@ function withWallet(ws) {
     if (event === 'wallet_list') {
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(event, wallets));
+      ws.send(await getWalletsFE(event, wallets));
     }
 
     if (event === 'wallet_create' || event === 'wallet_recover') {
@@ -93,7 +102,7 @@ function withWallet(ws) {
     
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(event, wallets));
+      ws.send(await getWalletsFE(event, wallets));
     }
 
     if (event === 'wallet_update') {
@@ -119,7 +128,7 @@ function withWallet(ws) {
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(event, wallets));
+      ws.send(await getWalletsFE(event, wallets));
     }
 
     if (event === 'wallet_destroy') {
@@ -136,7 +145,43 @@ function withWallet(ws) {
 
       let wallets = await walletServer.wallets();
 
-      ws.send(await getResponseFE(event, wallets));
+      ws.send(await getWalletsFE(event, wallets));
+    }
+
+    if (event === 'wallet_fees') {
+      let wallet = await walletServer.getShelleyWallet(data.id);
+      let receiver = new AddressWallet(data.receiver);
+      let estimatedFees = null;
+
+      try {
+        // Convert ada to lovelace
+        estimatedFees = await wallet.estimateFee([receiver], [data.amount * 1e6]);
+      } catch (error) {
+        ws.send(getErrorFE(error));
+        return;
+      }
+      
+      ws.send(await getFeesFE(event, estimatedFees));
+    }
+
+    if (event === 'wallet_send') {
+      let wallet = await walletServer.getShelleyWallet(data.id);
+      let receiver = new AddressWallet(data.receiver);
+      let transaction = null;
+
+      try {
+        // Convert ada to lovelace
+        transaction = await wallet.sendPayment(data.passphrase, [receiver], [data.amount * 1e6]);
+      } catch (error) {
+        ws.send(getErrorFE(error));
+        return;
+      }
+
+      ws.send(getSuccessFE('Your transaction has been sent.'));
+
+      let wallets = await walletServer.wallets();
+
+      ws.send(await getWalletsFE(event, wallets));
     }
   });
 }

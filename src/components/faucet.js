@@ -15,7 +15,7 @@ export default function Faucet({ sock }) {
   ) : utxo ? (
     <div className="pp__faucet pp__bump -ppwrap">
       <div className="pp__funds">
-        <div>total coin: {coin / 1e6} ADA</div>
+        <div>total coin: {coin / 1e6} ada</div>
       </div>
       <div className="pp__inputs">
         <input

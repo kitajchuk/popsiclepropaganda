@@ -5,23 +5,30 @@ import {
   NavLink,
   Route,
 } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ExternalLink, Upload, Download } from 'react-feather';
-import { selectWallets, selectNetwork, selectReady } from '../store/selectors';
+import { reset } from '../store/reducers';
+import { selectWallets, selectNetwork, selectReady, selectFees } from '../store/selectors';
 import Modal from './modal';
 import NotReady from './notready';
 import { SCANNER_URL, EXPLORER_URL } from '../constants';
 
 export default function Wallet({ sock }) {
+  const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
   const ready = useSelector(selectReady);
+  const fees = useSelector(selectFees);
   const wallet = wallets.find(wallet => wallet.id === params.id);
   const [name, setName] = useState('');
+  const [receiver, setReceiver] = useState('');
+  const [showUsed, setShowUsed] = useState(false);
+  const [amount, setAmount] = useState('');
   const [oldPassphrase, setOldPassphrase] = useState('');
   const [newPassphrase, setNewPassphrase] = useState('');
+  const [spendPassphrase, setSpendPassphrase] = useState('');
   const [isModal, setIsModal] = useState(false);
 
   useEffect(() => {
@@ -32,13 +39,30 @@ export default function Wallet({ sock }) {
   
   }, [wallet, name, setName]);
 
+  useEffect(() => {
+    if (wallet && receiver && amount && !spendPassphrase) {
+      sock.send('wallet_fees', {
+        id: wallet.id,
+        amount,
+        receiver,
+      });
+    }
+  }, [sock, wallet, receiver, amount, spendPassphrase]);
+
+  useEffect(() => {
+    if (!fees && receiver && amount && spendPassphrase) {
+      setAmount('');
+      setReceiver('');
+      setSpendPassphrase('');
+    }
+  }, [fees, receiver, amount, spendPassphrase]);
+
   const updateHandler = () => {
     let data = { id: wallet.id };
     let msg;
-    const isName = name.length;
     const isPassphrase = newPassphrase.length && oldPassphrase.length;
 
-    if (isName) {
+    if (name.length) {
       data = {
         ...data,
         name,
@@ -67,7 +91,31 @@ export default function Wallet({ sock }) {
 
   const confirmDeleteHandler = () => {
     sock.send('wallet_destroy', { id: wallet.id });
-    history.push('/wallets');
+    history.push('/');
+  };
+
+  const sendHandler = () => {
+    if (receiver.length && amount && spendPassphrase.length) {
+      sock.send('wallet_send', {
+        id: wallet.id,
+        passphrase: spendPassphrase,
+        amount,
+        receiver,
+      });
+    } else {
+      let msg;
+      if (!spendPassphrase.length) msg = 'Enter your spending passphrase to send ada';
+      if (!amount) msg = 'Enter an amount of ada to send';
+      if (!receiver.length) msg = 'Enter an address to send to';
+      sock.toast({ error: { message: msg } });
+    }
+  };
+
+  const resetHandler = () => {
+    setAmount('');
+    setReceiver('');
+    setSpendPassphrase('');
+    dispatch(reset());
   };
 
   return !ready ? (
@@ -101,8 +149,9 @@ export default function Wallet({ sock }) {
       <section className="pp__wallet pp__bump -ppwrap">
         <Route exact path={`/wallet/${wallet.id}/`}>
           <div className="pp__funds">
-            <div>available funds: {wallet.totalBalance / 1e6} ADA</div>
-            <div>total rewards: {wallet.rewardBalance / 1e6} ADA</div>
+            <div>available funds: {wallet.availableBalance / 1e6} ada</div>
+            <div>total funds: {wallet.totalBalance / 1e6} ada</div>
+            <div>total rewards: {wallet.rewardBalance / 1e6} ada</div>
             <div>delegation status: {wallet.delegation.active.status}</div>
           </div>
           <div className="pp__inputs">
@@ -142,33 +191,78 @@ export default function Wallet({ sock }) {
           )}
         </Route>
         <Route exact path={`/wallet/${wallet.id}/sender`}>
-          <div className="pp__addrs">
-            <div>unused addresses</div>
-            {wallet.unusedAddresses.map((addr) => {
-              return (
-                <input
-                  key={addr.id}
-                  type="text"
-                  name="address"
-                  value={addr.id}
-                  readOnly
-                />
-              );
-            })}
+          <div className="pp__inputs pp__dump">
+            <input
+              type="text"
+              name="receiver"
+              placeholder="paste an address"
+              onChange={(e) => setReceiver(e.target.value)}
+              value={receiver}
+            />
+            <input
+              type="text"
+              name="amount"
+              placeholder="amount in ada -- do not use lovelace here"
+              onChange={(e) => setAmount(Number(e.target.value))}
+              value={amount}
+            />
+            <input
+              type="password"
+              name="spendPassphrase"
+              placeholder="enter your spending passphrase"
+              onChange={(e) => setSpendPassphrase(e.target.value)}
+              value={spendPassphrase}
+            />
+            <div className="pp__bump pp__dump">estimated fees: {fees ? fees.estimated_max.quantity / 1e6 : 0} ada</div>
+            <div className="pp__btns">
+              <button className="confirm" onClick={resetHandler}>
+                reset
+              </button>
+              <button className="cancel" onClick={sendHandler} disabled={!fees && spendPassphrase.length}>
+                send
+              </button>
+            </div>
           </div>
-          <div className="pp__addrs pp__bump">
-            <div>used addresses</div>
-            {wallet.usedAddresses.map((addr) => {
-              return (
+          <div className="pp__addrs">
+            <div className="pp__dump">
+              <div>share any of these wallet addresses to receive ada, tokens or NFTs</div>
+              <label>
                 <input
-                  key={addr.id}
-                  type="text"
-                  name="address"
-                  value={addr.id}
-                  readOnly
+                  type="checkbox"
+                  value={showUsed}
+                  onChange={(e) => setShowUsed(e.target.checked)}
                 />
-              );
-            })}
+                <span>show used addresses</span>
+              </label>
+            </div>
+            {showUsed && (
+              <div className="pp__addrs__used">
+                {wallet.usedAddresses.map((addr) => {
+                  return (
+                    <input
+                      key={addr.id}
+                      type="text"
+                      name="address"
+                      value={addr.id}
+                      readOnly
+                    />
+                  );
+                })}
+              </div>
+            )}
+            <div className="pp__addrs__unused">
+              {wallet.unusedAddresses.map((addr) => {
+                return (
+                  <input
+                    key={addr.id}
+                    type="text"
+                    name="address"
+                    value={addr.id}
+                    readOnly
+                  />
+                );
+              })}
+            </div>
           </div>
         </Route>
         <Route exact path={`/wallet/${wallet.id}/transactions`}>
@@ -204,11 +298,12 @@ export default function Wallet({ sock }) {
                         {tx.direction === 'outgoing' ? <Upload className="outgoing" /> : <Download className="incoming" />}
                       </td>
                       <td>
-                        <div>{tx.amount.quantity / 1e6} ADA {verb}</div>
+                        <div>{(tx.amount.quantity - tx.fee.quantity) / 1e6} ada {verb}</div>
+                        <div>{tx.fee.quantity / 1e6} ada in fees</div>
                         <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
                       </td>
                       <td>
-                        <a href={`${EXPLORER_URL}/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
+                        <a href={`${EXPLORER_URL}/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">
                           <span>{tx.id}</span>
                           <ExternalLink />
                         </a>

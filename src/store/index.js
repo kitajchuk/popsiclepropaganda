@@ -8,4 +8,6 @@ const store = configureStore({
   },
 });
 
+window.ppStore = store;
+
 export default store;
