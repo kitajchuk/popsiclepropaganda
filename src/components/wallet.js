@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import {
   useHistory, 
@@ -22,6 +22,7 @@ export default function Wallet({ sock }) {
   const ready = useSelector(selectReady);
   const fees = useSelector(selectFees);
   const wallet = wallets.find(wallet => wallet.id === params.id);
+  const pollRef = useRef();
   const [name, setName] = useState('');
   const [receiver, setReceiver] = useState('');
   const [showUsed, setShowUsed] = useState(false);
@@ -56,6 +57,21 @@ export default function Wallet({ sock }) {
       setSpendPassphrase('');
     }
   }, [fees, receiver, amount, spendPassphrase]);
+
+  useEffect(() => {
+    if (wallet && wallet.availableBalance !== wallet.totalBalance && !pollRef.current) {
+      pollRef.current = setInterval(() => {
+        sock.send('wallet_list');
+        console.log('pp: wallet balances ping');
+      }, 3000);
+    }
+
+    if (wallet && wallet.availableBalance === wallet.totalBalance && pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+      console.log('pp: wallet poll cleared');
+    }
+  }, [wallet, sock]);
 
   const updateHandler = () => {
     let data = { id: wallet.id };
@@ -276,31 +292,34 @@ export default function Wallet({ sock }) {
               </thead>
               <tbody>
                 {wallet.transactions.map((tx) => {
-                  // console.log(tx);
-                  const verb = tx.direction === 'outgoing' ? 'sent' : 'received';
-                  const assets = {
-                    outgoing: [],
-                    incoming: [],
-                  };
-                  tx.inputs.forEach((ip) => {
-                    if (ip.assets) {
-                      assets.outgoing = assets.outgoing.concat(ip.assets);
-                    }
-                  });
-                  tx.outputs.forEach((op) => {
-                    if (op.assets) {
-                      assets.incoming = assets.incoming.concat(op.assets);
-                    }
-                  });
+                  let tokensText = null;
+                  if (tx.direction === 'incoming') {
+                    tx.outputs.forEach((obj) => {
+                      if (obj.assets && obj.assets.length && wallet.usedAddresses.find(addr => obj.address === addr.id)) {
+                        tokensText = 'tokens received';
+                      }
+                    });
+                  }
+                  if (tx.direction === 'outgoing') {
+                    tx.outputs.forEach((obj) => {
+                      if (obj.assets && obj.assets.length && !wallet.usedAddresses.find(addr => obj.address === addr.id)) {
+                        tokensText = 'tokens sent';
+                      }
+                    });
+                  }
                   return (
                     <tr key={tx.id}>
                       <td>
                         {tx.direction === 'outgoing' ? <Upload className="outgoing" /> : <Download className="incoming" />}
                       </td>
                       <td>
-                        <div>{(tx.amount.quantity - tx.fee.quantity) / 1e6} ada {verb}</div>
-                        <div>{tx.fee.quantity / 1e6} ada in fees</div>
-                        <div>{assets[tx.direction].length ? `tokens ${verb}` : null}</div>
+                        <div>{(tx.amount.quantity - tx.fee.quantity) / 1e6} ada {tx.direction === 'outgoing' ? 'sent' : 'received'}</div>
+                        {tx.direction === 'outgoing' && (
+                          <div>{tx.fee.quantity / 1e6} ada in fees</div>
+                        )}
+                        {tokensText !== null && (
+                          <div>{tokensText}</div>
+                        )}
                       </td>
                       <td>
                         <a href={`${EXPLORER_URL}/en/transaction?id=${tx.id}`} rel="noreferrer" target="_blank" title="Cardano Explorer">

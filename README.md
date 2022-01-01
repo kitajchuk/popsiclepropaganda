@@ -72,12 +72,7 @@ yarn build:src
 yarn electron:dev
 ```
 
-## Bin commands
-
-- `node ./bin/generate-nfts.js`
-  - Generates `JSON` for `NFT` metadata (rough draft)
-
-#### NFTs
+## NFTs
 
 Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to testnet wallets.
 

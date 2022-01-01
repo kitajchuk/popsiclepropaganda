@@ -5,14 +5,43 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
 import { CreditCard, Droplet } from 'react-feather';
+import Blockies from 'react-blockies';
 import { withSocket } from './socket';
-import { selectMessage } from './store/selectors';
+import { selectMessage, selectWallets } from './store/selectors';
 import Wallets from './components/wallets';
 import Wallet from './components/wallet';
 import Toast from './components/toast';
 import Faucet from './components/faucet';
+
+const WalletMast = () => {
+  const params = useParams();
+  const wallets = useSelector(selectWallets);
+  const wallet = wallets.find(wallet => wallet.id === params.id);
+
+  return wallet ? (
+    <div className="pp__mast__wallet">
+      <div>
+        <Blockies
+          seed={wallet.id}
+          size={8}
+          scale={4}
+          color="#f26d7d"
+          bgColor="#333333"
+          spotColor="#2affea"
+          className="pp__blockies"
+        />
+        <span>{wallet.name}</span>
+      </div>
+      <div>
+        <span>{wallet.availableBalance / 1e6}</span>
+        <div className="pp__ada">ada</div>
+      </div>   
+    </div>
+  ): null;
+}
 
 function App({sock}) {
   const message = useSelector(selectMessage);
@@ -64,7 +93,7 @@ function App({sock}) {
               '/wallet/:id',
               '/wallet/:id/:view',
             ]}>
-              wallet
+              <WalletMast />
             </Route>
             <Route exact path="/faucet">
               faucet

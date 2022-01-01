@@ -13,6 +13,14 @@ export function withSocket(WrappedComponent) {
     let pollTimer = useRef();
     let toastTimer = useRef();
 
+    const clearNetworkPoll = () => {
+      console.log('pp: network poll cleared');
+      clearInterval(pollTimer.current);
+      pollTimer.current = null;
+      webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
+      webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
+    };
+
     useEffect(() => {
       if (!webSocket.current) {
         webSocket.current = new WebSocket(`ws://localhost:${PORT_LOCAL}`);
@@ -38,11 +46,7 @@ export function withSocket(WrappedComponent) {
           if (json.event === 'wallet_connected' && !pollTimer.current) {
             pollTimer.current = setInterval(() => {
               if (json.network && json.network.sync_progress.status === 'ready') {
-                console.log('pp: network poll cleared');
-                clearInterval(pollTimer.current);
-                pollTimer.current = null;
-                webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
-                webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
+                clearNetworkPoll();
               } else {
                 if (pollTimer.current) {
                   console.log('pp: network ping');
@@ -53,11 +57,7 @@ export function withSocket(WrappedComponent) {
           }
     
           if (json.network && json.network.sync_progress.status === 'ready' && pollTimer.current) {
-            console.log('pp: network poll cleared');
-            clearInterval(pollTimer.current);
-            pollTimer.current = null;
-            webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
-            webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
+            clearNetworkPoll();
           }
     
           dispatch(update(json));

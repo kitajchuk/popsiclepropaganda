@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-feather';
+import Blockies from 'react-blockies';
 import { selectWallets, selectSeed, selectNetwork, selectReady } from '../store/selectors';
 import Modal from './modal';
 import NotReady from './notready';
@@ -99,24 +99,38 @@ export default function Wallets({ sock }) {
         return (
           <div className="pp__wallet pp__bump" key={wallet.id}>
             <NavLink to={`/wallet/${wallet.id}`} className="pp__wallet__link">
-              <Link />
-              {wallet.name}
+              <div>
+                <Blockies
+                  seed={wallet.id}
+                  size={8}
+                  scale={4}
+                  color="#f26d7d"
+                  bgColor="#333333"
+                  spotColor="#2affea"
+                  className="pp__blockies"
+                />
+                <span>{wallet.name}</span>
+              </div>
+              <div>
+                <span>{wallet.availableBalance / 1e6}</span>
+                <div className="pp__ada">ada</div>
+              </div>
             </NavLink>
           </div>
         );
       })}
-      <div className="pp__bump">
-        <button className="confirm" onClick={() => {
-          setMode('create');
-          setIsModal(!isModal);
-        }}>
-          add wallet
-        </button>
+      <div className="pp__btns pp__bump">
         <button className="recover" onClick={() => {
           setMode('recover');
           setIsModal(!isModal);
         }}>
           recover wallet
+        </button>
+        <button className="confirm" onClick={() => {
+          setMode('create');
+          setIsModal(!isModal);
+        }}>
+          add wallet
         </button>
       </div>
       {isModal && (
