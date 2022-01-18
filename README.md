@@ -50,10 +50,10 @@ The cardano-nodejs image is built from the [Dockerfile](./Dockerfile) in this pr
 
 ```shell
 # build from ./Dockerfile
-docker build --tag kitajchuk/cardano-nodejs:1.30.1 .
+docker build --tag kitajchuk/cardano-nodejs:1.33.0 .
 
 # publish to docker hub
-docker push kitajchuk/cardano-nodejs:1.30.1
+docker push kitajchuk/cardano-nodejs:1.33.0
 ```
 
 ## Frontend commands

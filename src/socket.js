@@ -1,6 +1,13 @@
-import { useEffect, useRef } from 'react';
+import {
+  useRef,
+  useEffect,
+} from 'react';
 import { useDispatch } from 'react-redux';
-import { update, toast, reset } from './store/reducers';
+import {
+  toast,
+  reset,
+  update,
+} from './store/reducers';
 import { PORT_LOCAL } from './constants';
 
 export function withSocket(WrappedComponent) {

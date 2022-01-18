@@ -37,7 +37,8 @@
   },
   "devDependencies": {
     "concurrently": "^6.5.1",
-    "electron": "^16.0.5"
+    "electron": "^16.0.5",
+    "electron-devtools-installer": "^3.2.0"
   },
   "eslintConfig": {
     "extends": [

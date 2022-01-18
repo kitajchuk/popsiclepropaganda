@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   cardano-node:
-    image: inputoutput/cardano-node:1.30.1
+    image: inputoutput/cardano-node:1.33.0
     environment:
       NETWORK:
     volumes:
@@ -19,7 +19,7 @@ services:
       - test
 
   cardano-wallet:
-    image: inputoutput/cardano-wallet:2021.11.11
+    image: inputoutput/cardano-wallet:2022.1.18
     volumes:
       - wallet-${NETWORK}-db:/wallet-db
       - node-ipc:/ipc
@@ -44,7 +44,7 @@ services:
       - test
   
   cardano-nodejs:
-    image: kitajchuk/cardano-nodejs:1.30.1
+    image: kitajchuk/cardano-nodejs:1.33.0
     environment:
       CARDANO_NODE_SOCKET_PATH: /ipc/node.socket
     volumes:

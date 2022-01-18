@@ -5,6 +5,11 @@ const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const isMac = (process.platform === 'darwin');
 const isProd = (process.env.NODE_ENV === 'production');
+const {
+  default: installExtension,
+  REDUX_DEVTOOLS,
+  REACT_DEVELOPER_TOOLS
+} = require('electron-devtools-installer');
 
 function createWindow () {
   // Create the browser window.
@@ -14,6 +19,7 @@ function createWindow () {
     height: 1440,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      devTools: !isProd,
     },
     backgroundColor: '#000000',
   });
@@ -34,7 +40,14 @@ function createWindow () {
     mainWindow.loadURL('http://localhost:3000');
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.once('dom-ready', async () => {
+      await installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
+              .then((name) => console.log(`Added Extension:  ${name}`))
+              .catch((err) => console.log("An error occurred: ", err))
+              .finally(() => {
+                mainWindow.webContents.openDevTools();
+              });
+    });
   }
 }
 

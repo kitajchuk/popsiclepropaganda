@@ -2,15 +2,25 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Blockies from 'react-blockies';
-import { selectWallets, selectSeed, selectNetwork, selectReady } from '../store/selectors';
+import {
+  selectSeed,
+  selectSyncing,
+  selectWallets,
+  selectNetwork,
+  selectConnecting,
+} from '../store/selectors';
 import Modal from './modal';
-import NotReady from './notready';
+import {
+  Syncing,
+  Connecting,
+} from './network';
 
 export default function Wallets({ sock }) {
   const seed = useSelector(selectSeed);
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
-  const ready = useSelector(selectReady);
+  const syncing = useSelector(selectSyncing);
+  const connecting = useSelector(selectConnecting);
   const [isModal, setIsModal] = useState(false);
   const [name, setName] = useState('');
   const [passphrase, setPassphrase] = useState('');
@@ -91,9 +101,15 @@ export default function Wallets({ sock }) {
     }
   };
 
-  return !ready ? (
-    <NotReady network={network} />
-  ) : (
+  if (connecting || network === null) {
+    return <Connecting network={network} />;
+  }
+
+  if (syncing) {
+    return <Syncing network={network} />
+  }
+
+  return (
     <section className="pp__wallets -ppwrap">
       {!!wallets.length && wallets.map((wallet) => {
         return (

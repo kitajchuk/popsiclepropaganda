@@ -1,17 +1,36 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import {
-  useHistory, 
-  NavLink,
   Route,
+  NavLink,
+  useHistory, 
 } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { ExternalLink, Upload, Download } from 'react-feather';
+import {
+  useSelector,
+  useDispatch,
+} from 'react-redux';
+import {
+  Upload,
+  Download,
+  ExternalLink,
+} from 'react-feather';
 import { reset } from '../store/reducers';
-import { selectWallets, selectNetwork, selectReady, selectFees } from '../store/selectors';
+import {
+  selectFees,
+  selectWallets,
+  selectNetwork,
+  selectSyncing,
+  selectConnecting,
+} from '../store/selectors';
 import Modal from './modal';
-import NotReady from './notready';
-import { SCANNER_URL, EXPLORER_URL } from '../constants';
+import {
+  Syncing,
+  Connecting,
+} from './network';
+import {
+  SCANNER_URL,
+  EXPLORER_URL,
+} from '../constants';
 
 export default function Wallet({ sock }) {
   const dispatch = useDispatch();
@@ -19,7 +38,8 @@ export default function Wallet({ sock }) {
   const history = useHistory();
   const wallets = useSelector(selectWallets);
   const network = useSelector(selectNetwork);
-  const ready = useSelector(selectReady);
+  const connecting = useSelector(selectConnecting);
+  const syncing = useSelector(selectSyncing);
   const fees = useSelector(selectFees);
   const wallet = wallets.find(wallet => wallet.id === params.id);
   const pollRef = useRef();
@@ -134,9 +154,15 @@ export default function Wallet({ sock }) {
     dispatch(reset());
   };
 
-  return !ready ? (
-    <NotReady network={network} />
-  ) : wallet ? (
+  if (connecting || network === null) {
+    return <Connecting network={network} />;
+  }
+
+  if (syncing) {
+    return <Syncing network={network} />
+  }
+
+  return (
     <>
       <nav className="pp__tabi">
         <ul>
@@ -362,5 +388,5 @@ export default function Wallet({ sock }) {
         </Route>
       </section>
     </>
-  ) : null;
+  );
 }

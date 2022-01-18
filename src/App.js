@@ -1,16 +1,22 @@
 import './styles/index.scss';
 import {
-  BrowserRouter as Router,
-  NavLink,
-  Switch,
   Route,
+  Switch,
+  NavLink,
+  BrowserRouter as Router,
 } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
-import { CreditCard, Droplet } from 'react-feather';
+import {
+  Droplet,
+  CreditCard,
+} from 'react-feather';
 import Blockies from 'react-blockies';
 import { withSocket } from './socket';
-import { selectMessage, selectWallets } from './store/selectors';
+import {
+  selectWallets,
+  selectMessage,
+} from './store/selectors';
 import Wallets from './components/wallets';
 import Wallet from './components/wallet';
 import Toast from './components/toast';

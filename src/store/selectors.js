@@ -7,3 +7,5 @@ export const selectNetwork = (state) => state.pp.network;
 export const selectFees = (state) => state.pp.fees;
 export const selectQuery = (state) => state.pp.query;
 export const selectReady = (state) => state.pp.network && state.pp.network.sync_progress.status === 'ready';
+export const selectSyncing = (state) => state.pp.network && state.pp.network.sync_progress.status === 'syncing';
+export const selectConnecting = (state) => state.pp.network && state.pp.network.sync_progress.status === 'not_responding';
