@@ -37,7 +37,7 @@ The default `.env` environment variables are as follows but have multiple values
 
 ## From source
 
-When running from source make sure your `cardano-wallet` server is using port `8090`.
+When running from source make sure your `cardano-wallet` server is using port `8090`. Run your `cardano-node` and `cardano-wallet`. Then you can start the nodejs app.
 
 - `cd app && yarn start`
 
