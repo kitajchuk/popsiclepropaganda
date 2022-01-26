@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Exploring the Cardano Blockchain",
   "private": true,
+  "scripts": {
+    "start": "nodemon index.js"
+  },
   "dependencies": {
     "cardano-wallet-js": "^1.2.3",
     "cardanocli-js": "^4.0.1",

@@ -5,15 +5,14 @@
   "private": true,
   "scripts": {
     "preinstall": "cd app && yarn",
-    "postinstall": "echo \"NETWORK=testnet\" > .env && echo \"BROWSER=none\" >> .env && echo \"NODE_ENV=development\" >> .env",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:app": "env-cmd --file .env docker-compose --project-name cardano up",
-    "stop:app": "env-cmd --file .env docker-compose --project-name cardano down",
-    "start:src": "env-cmd --file .env concurrently \"react-scripts start\" \"electron .\"",
-    "build:src": "env-cmd --file .env react-scripts build",
-    "test:src": "env-cmd --file .env react-scripts test",
-    "eject:src": "env-cmd --file .env react-scripts eject",
-    "electron:dev": "NODE_ENV=production electron ."
+    "postinstall": "echo \"NETWORK=testnet\" > .env && echo \"BROWSER=none\" >> .env && echo \"NODE_ENV=development\" >> .env && echo \"DEV_STACK=docker\" >> .env",
+    "dc:up": "env-cmd --file .env docker-compose --project-name cardano up",
+    "dc:down": "env-cmd --file .env docker-compose --project-name cardano down",
+    "cra:start": "env-cmd --file .env react-scripts start",
+    "cra:build": "env-cmd --file .env react-scripts build",
+    "cra:test": "env-cmd --file .env react-scripts test",
+    "cra:eject": "env-cmd --file .env react-scripts eject",
+    "electron:dev": "env-cmd --file .env concurrently \"react-scripts start\" \"electron .\""
   },
   "homepage": "./",
   "dependencies": {

@@ -1,12 +1,13 @@
 const { Seed, WalletServer, AddressWallet } = require('cardano-wallet-js');
-const { PORT_NETWORK } = require('../../constants');
+const { PORT_NETWORK, DEV_STACK } = require('../../constants');
 
 /**
  * The `cardano-wallet` host is exposed via docker-compose networks
  * Running this script on your host machine would be localhost:
  * http://localhost:${PORT_NETWORK}/v2
  */
-const walletServer = WalletServer.init(`http://cardano-wallet:${PORT_NETWORK}/v2`);
+const walletHost = (DEV_STACK === 'docker') ? 'cardano-wallet' : '127.0.0.1';
+const walletServer = WalletServer.init(`http://${walletHost}:${PORT_NETWORK}/v2`);
 
 function withWallet(ws) {
   const getWalletsFE = async (event, wallets) => {

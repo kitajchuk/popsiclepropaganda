@@ -5,14 +5,14 @@ const PORT_LOCAL = 8888;
 const PORT_NETWORK = 8090;
 
 // Network can be either "mainnet" or "testnet"
-const { NETWORK } = process.env;
+const { NETWORK, DEV_STACK } = process.env;
 
 // For handling shelljs stdout to console
 const SHELL_OPTS = { silent: true };
 const SHELL_OUT = { silent: false };
 
 // Always execute your node-js script from the directory your files are
-const ROOT = process.cwd();
+const ROOT = __dirname;
 const PRIV = path.join(ROOT, 'priv');
 const TMP = path.join(ROOT, 'tmp');
 
@@ -37,6 +37,7 @@ module.exports = {
   NETWORK,
   MIN_ADA,
   BURN_FEE,
+  DEV_STACK,
   SHELL_OUT,
   SHELL_OPTS,
   PORT_LOCAL,
