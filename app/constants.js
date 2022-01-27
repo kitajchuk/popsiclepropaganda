@@ -13,8 +13,10 @@ const SHELL_OUT = { silent: false };
 
 // Always execute your node-js script from the directory your files are
 const ROOT = __dirname;
-const PRIV = path.join(ROOT, 'priv');
-const TMP = path.join(ROOT, 'tmp');
+const ROOT_PRIV = path.join(ROOT, 'priv');
+const ROOT_TMP = path.join(ROOT, 'tmp');
+const PRIV = path.join(ROOT_PRIV, NETWORK);
+const TMP = path.join(ROOT_TMP, NETWORK);
 
 
 // There's some REAL maths for this stuff:
@@ -37,6 +39,8 @@ module.exports = {
   NETWORK,
   MIN_ADA,
   BURN_FEE,
+  ROOT_TMP,
+  ROOT_PRIV,
   DEV_STACK,
   SHELL_OUT,
   SHELL_OPTS,
