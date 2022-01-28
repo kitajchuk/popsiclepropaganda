@@ -79,14 +79,14 @@ export default function Wallet({ sock }) {
   }, [fees, receiver, amount, spendPassphrase]);
 
   useEffect(() => {
-    if (wallet && wallet.availableBalance !== wallet.totalBalance && !pollRef.current) {
+    if (wallet && wallet.state.status === 'syncing' && !pollRef.current) {
       pollRef.current = setInterval(() => {
         sock.send('wallet_list');
         console.log('pp: wallet balances ping');
       }, 3000);
     }
 
-    if (wallet && wallet.availableBalance === wallet.totalBalance && pollRef.current) {
+    if (wallet && wallet.state.status === 'ready' && pollRef.current) {
       clearInterval(pollRef.current);
       pollRef.current = null;
       console.log('pp: wallet poll cleared');
@@ -162,7 +162,7 @@ export default function Wallet({ sock }) {
     return <Syncing network={network} />
   }
 
-  return (
+  return wallet ? (
     <>
       <nav className="pp__tabi">
         <ul>
@@ -188,13 +188,21 @@ export default function Wallet({ sock }) {
           </li>
         </ul>
       </nav>
+      {wallet.state.status === 'syncing' && (
+        <section className="pp__bump -ppwrap">
+          <div>wallet synced: {wallet.state.progress.quantity}%</div>
+        </section>
+      )}
       <section className="pp__wallet pp__bump -ppwrap">
         <Route exact path={`/wallet/${wallet.id}/`}>
           <div className="pp__funds">
             <div>available funds: {wallet.availableBalance / 1e6} ada</div>
-            <div>total funds: {wallet.totalBalance / 1e6} ada</div>
             <div>total rewards: {wallet.rewardBalance / 1e6} ada</div>
+            <div>total funds: {wallet.totalBalance / 1e6} ada</div>
             <div>delegation status: {wallet.delegation.active.status}</div>
+            {wallet.delegation.active.status === 'delegating' && (
+              <div>pool: {wallet.delegation.active.target}</div>
+            )}
           </div>
           <div className="pp__inputs">
             <input
@@ -388,5 +396,9 @@ export default function Wallet({ sock }) {
         </Route>
       </section>
     </>
+  ) : (
+    <section className="pp__bump -ppwrap">
+      <div>loading wallet...</div>
+    </section>
   );
 }

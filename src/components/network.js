@@ -13,7 +13,7 @@ export const Connecting = ({ network }) => {
 export const Syncing = ({ network }) => {
   return (
     <section className="pp__bump -ppwrap">
-      <div>Blocks synced {network.sync_progress.progress.quantity}%</div>
+      <div>blocks synced {network.sync_progress.progress.quantity}%</div>
     </section>
   );
 } 

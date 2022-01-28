@@ -19,6 +19,7 @@ function withWallet(ws) {
         return {
           id: wallet.id,
           name: wallet.name,
+          state: wallet.state,
           assets: wallet.assets,
           statistics: await wallet.getUtxoStatistics(),
           usedAddresses: await wallet.getUsedAddresses(),
