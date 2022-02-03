@@ -13,7 +13,8 @@
     "cra:test": "env-cmd --file .env react-scripts test",
     "cra:eject": "env-cmd --file .env react-scripts eject",
     "electron:dev": "env-cmd --file .env concurrently \"react-scripts start\" \"electron .\"",
-    "app": "env-cmd --file .env nodemon app/index.js"
+    "app": "env-cmd --file .env nodemon app/index.js",
+    "crypt": "env-cmd --file .env node ./app/crypt.js"
   },
   "homepage": "./",
   "dependencies": {

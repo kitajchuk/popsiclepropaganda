@@ -4,10 +4,14 @@
   "description": "Exploring the Cardano Blockchain",
   "private": true,
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-nodejs": "^9.1.4",
+    "bip39": "^3.0.4",
     "cardano-wallet-js": "^1.2.3",
     "cardanocli-js": "^4.0.1",
+    "crypto-random-string": "^4.0.0",
     "nodemon": "^2.0.15",
     "shelljs": "^0.8.4",
     "ws": "^8.3.0"
-  }
+  },
+  "type": "module"
 }

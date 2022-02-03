@@ -23,23 +23,26 @@ export default function Faucet({ sock }) {
     return <Connecting network={network} />;
   }
 
-  if (syncing) {
-    return <Syncing network={network} />
-  }
-
-  return utxo ? (
-    <div className="pp__faucet pp__bump -ppwrap">
-      <div className="pp__funds">
-        <div>total coin: {coin / 1e6} ada</div>
-      </div>
-      <div className="pp__inputs">
-        <input
-          type="text"
-          name="address"
-          value={utxo.address}
-          readOnly
-        />
-      </div>
-    </div>
-  ) : null;
+  return (
+    <>
+      {syncing && (
+        <Syncing network={network} />
+      )}
+      {utxo && (
+        <div className="pp__faucet pp__bump -ppwrap">
+          <div className="pp__funds">
+            <div>total coin: {coin / 1e6} ada</div>
+          </div>
+          <div className="pp__inputs">
+            <input
+              type="text"
+              name="address"
+              value={utxo.address}
+              readOnly
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

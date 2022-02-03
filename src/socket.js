@@ -24,8 +24,8 @@ export function withSocket(WrappedComponent) {
       console.log('pp: network poll cleared');
       clearInterval(pollTimer.current);
       pollTimer.current = null;
-      webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
-      webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
+      // webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
+      // webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
     };
 
     useEffect(() => {
@@ -58,6 +58,8 @@ export function withSocket(WrappedComponent) {
                 if (pollTimer.current) {
                   console.log('pp: network ping');
                   webSocket.current.send(JSON.stringify({ event: 'wallet_network' }));
+                  webSocket.current.send(JSON.stringify({ event: 'wallet_list' }));
+                  webSocket.current.send(JSON.stringify({ event: 'faucet_utxo' }));
                 }
               }
             }, pollTime);

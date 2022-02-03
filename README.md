@@ -62,9 +62,10 @@ docker push kitajchuk/cardano-nodejs:1.33.0
 
 ## Frontend
 
+- `yarn cra:start`
 - `yarn electron:dev`
 
-The frontend is currently a [create-react-app](https://create-react-app.dev) frontend loaded via [electron](https://github.com/electron/electron) so this can be desktop software. Currently it is not a very robust electron implementation, however many good concepts can be lifted from [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate) to make it better. The goal is to have minimal boilerplate overhead which is why we're not using a boilerplate like electron-react-boilerplate wholesale.
+The frontend is currently a [create-react-app](https://create-react-app.dev) frontend. It can be loaded via [electron](https://github.com/electron/electron) so this can be desktop software. Currently it is not a very robust electron implementation, however many good concepts can be lifted from [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate) to make it better. The goal is to have minimal boilerplate overhead which is why we're not using a boilerplate like electron-react-boilerplate wholesale.
 
 ## NFTs
 

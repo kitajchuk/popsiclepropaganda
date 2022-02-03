@@ -105,12 +105,11 @@ export default function Wallets({ sock }) {
     return <Connecting network={network} />;
   }
 
-  if (syncing) {
-    return <Syncing network={network} />
-  }
-
   return (
     <section className="pp__wallets -ppwrap">
+      {syncing && (
+        <Syncing network={network} />
+      )}
       {!!wallets.length && wallets.map((wallet) => {
         return (
           <div className="pp__wallet pp__bump" key={wallet.id}>

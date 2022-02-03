@@ -158,10 +158,6 @@ export default function Wallet({ sock }) {
     return <Connecting network={network} />;
   }
 
-  if (syncing) {
-    return <Syncing network={network} />
-  }
-
   return wallet ? (
     <>
       <nav className="pp__tabi">
@@ -188,6 +184,9 @@ export default function Wallet({ sock }) {
           </li>
         </ul>
       </nav>
+      {syncing && (
+        <Syncing network={network} />
+      )}
       {wallet.state.status === 'syncing' && (
         <section className="pp__bump -ppwrap">
           <div>wallet synced: {wallet.state.progress.quantity}%</div>
