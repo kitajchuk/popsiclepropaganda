@@ -34,7 +34,7 @@ The default `.env` environment variables are as follows but have multiple values
 - `NETWORK`: Default is `testnet`. Can be `mainnet`.
 - `BROWSER`: Default is `none` to disable `cra` default browser.
 - `NODE_ENV`: Default is `development`. Can be `production`.
-- `DEV_STACK`: Default is `docker`. Can be `source` to run from source.
+- `DEV_STACK`: Default is `source`. Can be `docker` to run from source.
 
 ## From source
 
