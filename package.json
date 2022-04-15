@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "preinstall": "cd app && yarn",
-    "postinstall": "echo \"NETWORK=testnet\" > .env && echo \"BROWSER=none\" >> .env && echo \"NODE_ENV=development\" >> .env && echo \"DEV_STACK=docker\" >> .env",
-    "dc:up": "env-cmd --file .env docker-compose --project-name cardano up",
-    "dc:down": "env-cmd --file .env docker-compose --project-name cardano down",
+    "postinstall": "echo \"NETWORK=testnet\" > .env && echo \"BROWSER=none\" >> .env && echo \"NODE_ENV=development\" >> .env && echo \"DEV_STACK=source\" >> .env",
+    "dc:up": "env-cmd --file .env docker-compose --file ./docker/docker-compose.yml --project-name cardano up",
+    "dc:down": "env-cmd --file .env docker-compose --file ./docker/docker-compose.yml --project-name cardano down",
     "cra:start": "env-cmd --file .env react-scripts start",
     "cra:build": "env-cmd --file .env react-scripts build",
     "cra:test": "env-cmd --file .env react-scripts test",
@@ -40,6 +40,7 @@
     "concurrently": "^6.5.1",
     "electron": "^16.0.5",
     "electron-devtools-installer": "^3.2.0",
+    "ipfs-core": "^0.14.2",
     "nodemon": "^2.0.15"
   },
   "eslintConfig": {

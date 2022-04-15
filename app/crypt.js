@@ -8,6 +8,8 @@
  * 
  * Without cardano-wallet-js:
  * https://cardano.stackexchange.com/questions/6779/how-to-import-root-private-key-or-account-private-key-to-cardano-wallet
+ * 
+ * Need to add { type: "module" } to package.json to run this script...
  */
 
 import { Seed } from 'cardano-wallet-js';

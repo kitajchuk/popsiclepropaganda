@@ -1,0 +1,83 @@
+################################################################################
+# cardano build sources at ~/cardano-src/...
+# cardano config files etc at ~/cardano/...
+# cardano binaries at ~/.local/bin/...
+################################################################################
+
+export PATH="$HOME/.local/bin/:$PATH"
+export CARDANO_NODE_SOCKET_PATH="$HOME/cardano/node.socket"
+export CARDANO_NODE_PORT="1337"
+export CARDANO_NODE_MAINNET_DB="$HOME/cardano/db/mainnet/"
+export CARDANO_NODE_TESTNET_DB="$HOME/cardano/db/testnet/"
+export CARDANO_WALLET_PORT="8090"
+export CARDANO_WALLET_MAINNET_DB="$HOME/cardano/wallet-db/mainnet"
+export CARDANO_WALLET_TESTNET_DB="$HOME/cardano/wallet-db/testnet"
+export TEST_WALLET_HOST="127.0.0.1"
+export TEST_WALLET_PORT="$CARDANO_WALLET_PORT"
+
+function cardano-node-testnet() {
+  cardano-node run \
+    --topology $HOME/cardano/configuration/cardano/testnet-topology.json \
+    --database-path $CARDANO_NODE_TESTNET_DB \
+    --port $CARDANO_NODE_PORT \
+    --config $HOME/cardano/configuration/cardano/testnet-config.json \
+    --socket-path $CARDANO_NODE_SOCKET_PATH  > /dev/null 2>&1 &
+  echo "$!" > $HOME/cardano/node.pid
+}
+
+function cardano-node-mainnet() {
+  cardano-node run \
+    --topology $HOME/cardano/configuration/cardano/mainnet-topology.json \
+    --database-path $CARDANO_NODE_MAINNET_DB \
+    --port $CARDANO_NODE_PORT \
+    --config $HOME/cardano/configuration/cardano/mainnet-config.yaml \
+    --socket-path $CARDANO_NODE_SOCKET_PATH  > /dev/null 2>&1 &
+  echo "$!" > $HOME/cardano/node.pid
+}
+
+function cardano-wallet-testnet() {
+  cardano-wallet serve \
+    --node-socket $CARDANO_NODE_SOCKET_PATH \
+    --database $CARDANO_WALLET_TESTNET_DB \
+    --listen-address 0.0.0.0 \
+    --port $CARDANO_WALLET_PORT \
+    --testnet $HOME/cardano/configuration/cardano/testnet-byron-genesis.json > /dev/null 2>&1 &
+  echo "$!" > $HOME/cardano/wallet.pid
+}
+
+function cardano-wallet-mainnet() {
+  cardano-wallet serve \
+    --node-socket $CARDANO_NODE_SOCKET_PATH \
+    --database $CARDANO_WALLET_MAINNET_DB \
+    --listen-address 0.0.0.0 \
+    --port $CARDANO_WALLET_PORT \
+    --mainnet > /dev/null 2>&1 &
+  echo "$!" > $HOME/cardano/wallet.pid
+}
+
+function cardano-kill-node() {
+  cat $HOME/cardano/node.pid | xargs kill -9
+  echo "" > $HOME/cardano/node.pid
+}
+
+function cardano-kill-wallet() {
+  cat $HOME/cardano/wallet.pid | xargs kill -9
+  echo "" > $HOME/cardano/wallet.pid
+}
+
+function cardano-tip-testnet() {
+  cardano-cli query tip \
+    --testnet-magic 1097911063 | jq .
+}
+
+function cardano-tip-mainnet() {
+  cardano-cli query tip --mainnet | jq .
+}
+
+function cardano-check-wallet() {
+  curl http://localhost:8090/v2/network/information | jq .
+}
+
+function cardano-local-cluster() {
+  ~/.local/bin/local-cluster
+}

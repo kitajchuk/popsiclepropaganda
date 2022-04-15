@@ -7,10 +7,11 @@ popsiclepropaganda
 
 ## Overview
 
-This is a project to explore Cardano concepts by implementing them. Currently focusing on wallets, transactions, native assets and NFTs. This scaffold can run with either `docker-compose` (easy) or with the equivalent stack installed from source (advanced). Follow instructions for [installing cardano-wallet](https://developers.cardano.org/docs/get-started/installing-cardano-wallet/) and [installing cardano-node](https://developers.cardano.org/docs/get-started/installing-cardano-node) from source. The current compatible versions implemented are:
+This is a project to explore Cardano concepts by implementing them. Currently focusing on wallets, transactions, native assets and NFTs. I am planning to learn [Plutus](https://developers.cardano.org/docs/smart-contracts/plutus) development for smart contracts and dApps on Cardano.
 
-- [cardano-node@1.33.0](https://github.com/input-output-hk/cardano-node/releases/tag/1.33.0)
-- [cardano-wallet@v2022-01-18](https://github.com/input-output-hk/cardano-wallet/releases/tag/v2022-01-18)
+This scaffold can run with either `docker-compose` (easy) or with the equivalent stack installed from source or from release binaries for [cardano-node](https://github.com/input-output-hk/cardano-node/releases/tag/1.34.1) and [cardano-wallet](https://github.com/input-output-hk/cardano-wallet/releases/tag/v2022-01-18) (more advanced). Personally I have mostly abandoned the docker stack as I find docker to be not so performant with the weight of the blockchain applications running on `macos`.
+
+This project is not intended to walk through getting your local environment set up for Cardano development. In short, for installing the stack locally I have created variables and functions in my `.bashrc` file to make things easier. I installed the binaries to `~/.local/bin/...` and I keep my `configurations`, `db` and `socket` at `~/cardano`. I am on `macos`. Check the [.bashrc.example](./.bashrc.example) for what my local stack config looks like.
 
 #### Faucet scripts
 
@@ -50,11 +51,11 @@ The [docker-compose](./docker-compose.yml) file is from [cardano-wallet](https:/
 
 #### cardano-nodejs
 
-The `cardano-nodejs` image is built from the [Dockerfile](./Dockerfile) in this project.
+The `cardano-nodejs` image is built from the [Dockerfile](./docker/Dockerfile) in this project.
 
 ```shell
-# build from ./Dockerfile
-docker build --tag kitajchuk/cardano-nodejs:1.33.0 .
+# build from ./docker/Dockerfile
+docker build --file ./docker/Dockerfile --tag kitajchuk/cardano-nodejs:1.33.0 .
 
 # publish to docker hub
 docker push kitajchuk/cardano-nodejs:1.33.0
