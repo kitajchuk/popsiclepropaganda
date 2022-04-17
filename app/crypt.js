@@ -9,68 +9,72 @@
  * Without cardano-wallet-js:
  * https://cardano.stackexchange.com/questions/6779/how-to-import-root-private-key-or-account-private-key-to-cardano-wallet
  * 
- * Need to add { type: "module" } to package.json to run this script...
  */
 
-import { Seed } from 'cardano-wallet-js';
-import CardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
-import cryptoRandomString from 'crypto-random-string';
-
+const { Seed } = require('cardano-wallet-js');
 const {
-  WALLET_PHRASE,
-  WALLET_PASSWORD,
-} = process.env;
+  Bip32PrivateKey,
+  encrypt_with_password,
+  decrypt_with_password,
+} = require('@emurgo/cardano-serialization-lib-nodejs');
 
-// Purpose derivation (See BIP43), see CIP 1852
-const Purpose = {
-  CIP1852: 1852,
-};
-
-// Cardano coin type (SLIP 44)
-const CoinTypes = {
-  CARDANO: 1815,
-};
-
-const ChainDerivation = {
-  EXTERNAL: 0, // from BIP44
-  INTERNAL: 1, // from BIP44
-  CHIMERIC: 2, // from CIP1852
-};
-
-const privKey = Seed.deriveRootKey(WALLET_PHRASE).to_bech32();
-const rootKey = CardanoWasm.Bip32PrivateKey.from_bech32(privKey);
-const accountKey = rootKey
-  .derive(Seed.harden(Purpose.CIP1852))
-  .derive(Seed.harden(CoinTypes.CARDANO))
-  .derive(Seed.harden(0)); // Account #0
-const publicKey = accountKey
-  .derive(ChainDerivation.EXTERNAL)
-  .derive(ChainDerivation.EXTERNAL)
-  .to_public();
-
-const password = Buffer.from(WALLET_PASSWORD);
-const salt = Buffer.from(cryptoRandomString({ length: 2 * 32 }), 'hex');
-const nonce = Buffer.from(cryptoRandomString({ length: 2 * 12 }), 'hex');
-
-// I think Yoroi uses root key...
-// https://github.com/Emurgo/yoroi-frontend/blob/aea5c9d69bfa091dfc3957dfefa0e9beccb5331c/packages/yoroi-extension/app/api/ada/lib/storage/bridge/walletBuilder/shelley.js#L166-L169
-const data = Buffer.from(rootKey.to_bech32());
-
-const encryptedData = CardanoWasm.encrypt_with_password(
-  password.toString('hex'),
-  salt.toString('hex'),
-  nonce.toString('hex'),
-  data.toString('hex')
-);
-
-console.log('encryptedData', encryptedData);
-
-const decryptedData = CardanoWasm.decrypt_with_password(
-  password.toString('hex'),
-  encryptedData
-);
-
-console.log('decryptedData', decryptedData);
-
-// Decrypted data is the correct data...
-console.log(Buffer.from(decryptedData, 'hex').toString() === data.toString());
+import('crypto-random-string').then(({ default: cryptoRandomString }) => {
+  const {
+    WALLET_PHRASE,
+    WALLET_PASSWORD,
+  } = process.env;
+  
+  // Purpose derivation (See BIP43), see CIP 1852
+  const Purpose = {
+    CIP1852: 1852,
+  };
+  
+  // Cardano coin type (SLIP 44)
+  const CoinTypes = {
+    CARDANO: 1815,
+  };
+  
+  const ChainDerivation = {
+    EXTERNAL: 0, // from BIP44
+    INTERNAL: 1, // from BIP44
+    CHIMERIC: 2, // from CIP1852
+  };
+  
+  const privKey = Seed.deriveRootKey(WALLET_PHRASE).to_bech32();
+  const rootKey = Bip32PrivateKey.from_bech32(privKey);
+  const accountKey = rootKey
+    .derive(Seed.harden(Purpose.CIP1852))
+    .derive(Seed.harden(CoinTypes.CARDANO))
+    .derive(Seed.harden(0)); // Account #0
+  const publicKey = accountKey
+    .derive(ChainDerivation.EXTERNAL)
+    .derive(ChainDerivation.EXTERNAL)
+    .to_public();
+  
+  const password = Buffer.from(WALLET_PASSWORD);
+  const salt = Buffer.from(cryptoRandomString({ length: 2 * 32 }), 'hex');
+  const nonce = Buffer.from(cryptoRandomString({ length: 2 * 12 }), 'hex');
+  
+  // I think Yoroi uses root key...
+  // https://github.com/Emurgo/yoroi-frontend/blob/aea5c9d69bfa091dfc3957dfefa0e9beccb5331c/packages/yoroi-extension/app/api/ada/lib/storage/bridge/walletBuilder/shelley.js#L166-L169
+  const data = Buffer.from(rootKey.to_bech32());
+  
+  const encryptedData = encrypt_with_password(
+    password.toString('hex'),
+    salt.toString('hex'),
+    nonce.toString('hex'),
+    data.toString('hex')
+  );
+  
+  console.log('encryptedData', encryptedData);
+  
+  const decryptedData = decrypt_with_password(
+    password.toString('hex'),
+    encryptedData
+  );
+  
+  console.log('decryptedData', decryptedData);
+  
+  // Decrypted data is the correct data...
+  console.log(Buffer.from(decryptedData, 'hex').toString() === data.toString());
+});
