@@ -15,7 +15,11 @@ The longer term goals of this repository are to learn [haskell](http://learnyoua
 
 - [lucid-cardano](https://github.com/Berry-Pool/lucid)
 - [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib)
+- [message-signing](https://github.com/Emurgo/message-signing)
+- [cips.cardano.org](https://cips.cardano.org/)
 - [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025/CIP-0025.md)
+- [CIP-0030](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030)
+- [CIP-0008](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md)
 - [nami-wallet](https://github.com/Berry-Pool/nami-wallet)
 - [cardano-wallet-connector](https://github.com/dynamicstrategies/cardano-wallet-connector)
 - [cardano-wallet-interface](https://github.com/HarmonicPool/cardano-wallet-interface)
