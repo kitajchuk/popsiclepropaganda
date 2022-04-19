@@ -7,11 +7,11 @@ popsiclepropaganda
 
 ## About
 
-This is a repository to explore Cardano blockchain development.
+This is a repository to explore Cardano blockchain development for self-paced academic purposes only!
 
 ## Future project goals
 
-The longer term goals of this repository are to learn [haskell](http://learnyouahaskell.com/) programming and ultimately [plutus](https://developers.cardano.org/docs/smart-contracts/plutus) smart contract development. Combining all the concepts I intend to create an independent Popsicle Propaganda NFT marketplace to mint and house my personal artwork. Some reference links that will be useful when we get there:
+The longer term goals of this repository are to learn [haskell](http://learnyouahaskell.com/) programming and ultimately [plutus](https://developers.cardano.org/docs/smart-contracts/plutus) smart contract development. Combining all the concepts I intend to create an independent Popsicle Propaganda NFT marketplace to mint and house my personal artworks. This is purely for personal interest in learning this tech stack and building a DApp. Some reference links that will be useful when we get there:
 
 - [lucid-cardano](https://github.com/Berry-Pool/lucid)
 - [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib)
@@ -34,7 +34,7 @@ I set up my local Cardano stack with release binaries and created some functions
 
 ### Faucet scripts
 
-As stated these are [rudimentary low-level scripts](./app/utils/rawtx/index.js) for wrapping the `cardano-cli`. While they were a great fun exercise in learning about Cardano transactions from the lowest level of the service, they are obsolete since the [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) is the preferred tool for working with all facets of Cardano moving forward.
+As stated these are [rudimentary low-level scripts](./app/utils/rawtx/index.js) for wrapping the `cardano-cli`. While they were a great fun exercise in learning about Cardano transactions from the lowest level of the system, they are obsolete since the [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) is the preferred tool for working with all facets of Cardano moving forward.
 
 Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these low-level scripts. They were minted by a testnet `payment.addr` and sent to a testnet wallet created with the local full node wallet here.
 
@@ -42,6 +42,8 @@ Example Popsicle Propaganda NFTs were minted on the Cardano Testnet with these l
 - [PP2](https://testnet.cardanoscan.io/token/b9f1705170d75f144a4fd0636c2928b2bb39a5ab4db343978a0a1568505032)
 
 ### Local wallet
+
+This is a functional Cardano full-node wallet but should not be used! It's brittle and not for "production". I built this out of self interest in learning about some Cardano concepts.
 
 #### Install
 
