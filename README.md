@@ -11,7 +11,7 @@ This is a repository to explore Cardano blockchain development for self-paced ac
 
 ## Future project goals
 
-The longer term goals of this repository are to learn [haskell](http://learnyouahaskell.com/) programming and ultimately [plutus](https://developers.cardano.org/docs/smart-contracts/plutus) smart contract development. Combining all the concepts I intend to create an independent Popsicle Propaganda NFT marketplace to mint and house my personal artworks. This is purely for personal interest in learning this tech stack and building a DApp. Some reference links that will be useful when we get there:
+The longer term goals of this repository are to learn [haskell](http://learnyouahaskell.com/) programming and ultimately [plutus](https://developers.cardano.org/docs/smart-contracts/plutus) smart contract development. Combining all the concepts I intend to create an independent Popsicle Propaganda NFT marketplace to mint and house my personal artworks. This is purely for personal interest in learning this tech stack and building a DApp. I have no interest in creating an NFT community...possibly by the time I get to this point I'll have a better idea for a more meaningful DApp 🤔. Some reference links that will be useful when we get there:
 
 - [lucid-cardano](https://github.com/Berry-Pool/lucid)
 - [cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib)
